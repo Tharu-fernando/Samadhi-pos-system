@@ -108,7 +108,7 @@ public class Dashboard extends javax.swing.JFrame {
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(29, 29, 29)
                         .addComponent(jLabel1)
-                        .addGap(0, 21, Short.MAX_VALUE)))
+                        .addGap(0, 18, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(15, 15, 15)
