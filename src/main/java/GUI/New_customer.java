@@ -4,6 +4,11 @@
  */
 package GUI;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
+import javax.swing.JOptionPane;
 /**
  *
  * @author tharu
@@ -16,6 +21,7 @@ public class New_customer extends javax.swing.JDialog {
     public New_customer(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        jButton1.addActionListener(evt -> saveCustomer());
     }
 
     /**
@@ -123,6 +129,59 @@ public class New_customer extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void saveCustomer() {
+        String fullName = jTextField1.getText().trim();
+        String phone = jTextField2.getText().trim();
+        String tier = getSelectedTier();
+
+        // --- Validation only, no DB yet ---
+        if (fullName.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                "Full name cannot be empty.", "Validation Error",
+                JOptionPane.WARNING_MESSAGE);
+            jTextField1.requestFocus();
+            return;
+        }
+
+        if (phone.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                "Phone number cannot be empty.", "Validation Error",
+                JOptionPane.WARNING_MESSAGE);
+            jTextField2.requestFocus();
+            return;
+        }
+
+        if (!phone.matches("^0\\d{9}$")) {
+            JOptionPane.showMessageDialog(this,
+                "Enter a valid 10-digit phone number starting with 0.",
+                "Validation Error", JOptionPane.WARNING_MESSAGE);
+            jTextField2.requestFocus();
+            return;
+        }
+
+        if (tier == null) {
+            JOptionPane.showMessageDialog(this,
+                "Please select a starting tier.", "Validation Error",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // --- Placeholder success (no DB save yet) ---
+        JOptionPane.showMessageDialog(this,
+            "Customer details captured (not yet saved to database):\n"
+            + "Name: " + fullName + "\n"
+            + "Phone: " + phone + "\n"
+            + "Tier: " + tier,
+            "Preview", JOptionPane.INFORMATION_MESSAGE);
+
+        // this.dispose(); // uncomment once DB save is wired in
+    }
+
+    private String getSelectedTier() {
+        // TODO: wire this up to actual radio buttons / combo box for tier selection
+        // Placeholder so you can test the flow:
+        return "Bronze";
+    }
     /**
      * @param args the command line arguments
      */
