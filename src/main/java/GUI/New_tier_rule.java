@@ -30,44 +30,44 @@ public class New_tier_rule extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
-        jLabel4 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
-        jLabel5 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jToggleButton1 = new javax.swing.JToggleButton();
+        Discount_and_Delivery_SUB_Interface_Palne_Text = new javax.swing.JLabel();
+        New_Tier_Rule_Plane_text = new javax.swing.JLabel();
+        Tier_Name_Plane_text = new javax.swing.JLabel();
+        Tier_Name_Input = new javax.swing.JTextField();
+        Min_Points_Plane_text = new javax.swing.JLabel();
+        Max_Points_Input = new javax.swing.JTextField();
+        Max_Points_Plane_text = new javax.swing.JLabel();
+        Min_Points_Input = new javax.swing.JTextField();
+        Discount_Presentaage_Plane_text = new javax.swing.JLabel();
+        Discount_Presentaage_Input = new javax.swing.JTextField();
+        Save_RuleBtn = new javax.swing.JToggleButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(204, 255, 255));
 
-        jLabel1.setText("Discount & Delivery - SUB-Interface");
+        Discount_and_Delivery_SUB_Interface_Palne_Text.setText("Discount & Delivery - SUB-Interface");
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 21)); // NOI18N
-        jLabel2.setText("New Tier Rule");
+        New_Tier_Rule_Plane_text.setFont(new java.awt.Font("Segoe UI", 1, 21)); // NOI18N
+        New_Tier_Rule_Plane_text.setText("New Tier Rule");
 
-        jLabel3.setText("Tier Name");
+        Tier_Name_Plane_text.setText("Tier Name");
 
-        jLabel4.setText("Min_Points");
+        Min_Points_Plane_text.setText("Min Points");
 
-        jTextField3.addActionListener(this::jTextField3ActionPerformed);
+        Max_Points_Input.addActionListener(this::Max_Points_InputActionPerformed);
 
-        jLabel5.setText("Max_Points");
+        Max_Points_Plane_text.setText("Max Points");
 
-        jTextField4.addActionListener(this::jTextField4ActionPerformed);
+        Min_Points_Input.addActionListener(this::Min_Points_InputActionPerformed);
 
-        jLabel6.setText("Discount Presentaage");
+        Discount_Presentaage_Plane_text.setText("Discount Presentaage");
 
-        jToggleButton1.setBackground(new java.awt.Color(0, 153, 51));
-        jToggleButton1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jToggleButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jToggleButton1.setText("Save Rule");
-        jToggleButton1.addActionListener(this::jToggleButton1ActionPerformed);
+        Save_RuleBtn.setBackground(new java.awt.Color(0, 153, 51));
+        Save_RuleBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        Save_RuleBtn.setForeground(new java.awt.Color(255, 255, 255));
+        Save_RuleBtn.setText("Save Rule");
+        Save_RuleBtn.addActionListener(this::Save_RuleBtnActionPerformed);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -78,55 +78,55 @@ public class New_tier_rule extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 395, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel1)))
+                            .addComponent(Tier_Name_Plane_text)
+                            .addComponent(Tier_Name_Input, javax.swing.GroupLayout.PREFERRED_SIZE, 395, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(New_Tier_Rule_Plane_text)
+                            .addComponent(Discount_and_Delivery_SUB_Interface_Palne_Text)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(19, 19, 19)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jToggleButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 395, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Save_RuleBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 395, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(Discount_Presentaage_Plane_text, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGroup(jPanel2Layout.createSequentialGroup()
                                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                         .addGroup(jPanel2Layout.createSequentialGroup()
-                                            .addComponent(jLabel4)
+                                            .addComponent(Min_Points_Plane_text)
                                             .addGap(140, 140, 140))
                                         .addGroup(jPanel2Layout.createSequentialGroup()
-                                            .addComponent(jTextField4)
+                                            .addComponent(Min_Points_Input)
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
                                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addComponent(jTextField1)))))
+                                        .addComponent(Max_Points_Plane_text, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(Max_Points_Input, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(Discount_Presentaage_Input)))))
                 .addContainerGap(21, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(19, 19, 19)
-                .addComponent(jLabel1)
+                .addComponent(Discount_and_Delivery_SUB_Interface_Palne_Text)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel2)
+                .addComponent(New_Tier_Rule_Plane_text)
                 .addGap(34, 34, 34)
-                .addComponent(jLabel3)
+                .addComponent(Tier_Name_Plane_text)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(Tier_Name_Input, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel4))
+                    .addComponent(Max_Points_Plane_text)
+                    .addComponent(Min_Points_Plane_text))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(Max_Points_Input, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Min_Points_Input, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jLabel6)
+                .addComponent(Discount_Presentaage_Plane_text)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(Discount_Presentaage_Input, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(66, 66, 66)
-                .addComponent(jToggleButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(Save_RuleBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(32, Short.MAX_VALUE))
         );
 
@@ -161,17 +161,84 @@ public class New_tier_rule extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+    private void Max_Points_InputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Max_Points_InputActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField3ActionPerformed
+    }//GEN-LAST:event_Max_Points_InputActionPerformed
 
-    private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
+    private void Min_Points_InputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Min_Points_InputActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField4ActionPerformed
+    }//GEN-LAST:event_Min_Points_InputActionPerformed
 
-    private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jToggleButton1ActionPerformed
+    // error handling
+    private void Save_RuleBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Save_RuleBtnActionPerformed
+    
+    String tierName = Tier_Name_Input.getText().trim();
+    String minPointsStr = Min_Points_Input.getText().trim();
+    String maxPointsStr = Max_Points_Input.getText().trim();
+    String discountStr = Discount_Presentaage_Input.getText().trim();
+
+    // 1. Empty checks
+    if (tierName.isEmpty()) {
+        showError("Tier Name cannot be empty.");
+        return;
+    }
+    if (minPointsStr.isEmpty()) {
+        showError("Min Points cannot be empty.");
+        return;
+    }
+    if (maxPointsStr.isEmpty()) {
+        showError("Max Points cannot be empty.");
+        return;
+    }
+    if (discountStr.isEmpty()) {
+        showError("Discount Percentage cannot be empty.");
+        return;
+    }
+
+    // 2. Tier Name must be letters only
+    if (!tierName.matches("[a-zA-Z ]+")) {
+        showError("Tier Name can only contain letters.");
+        return;
+    }
+
+    // 3. Min/Max Points must be whole numbers
+    int minPoints, maxPoints;
+    try {
+        minPoints = Integer.parseInt(minPointsStr);
+        maxPoints = Integer.parseInt(maxPointsStr);
+    } catch (NumberFormatException e) {
+        showError("Min Points and Max Points must be whole numbers.");
+        return;
+    }
+
+    // 4. Discount must be a float
+    float discount;
+    try {
+        discount = Float.parseFloat(discountStr);
+    } catch (NumberFormatException e) {
+        showError("Discount Percentage must be a number (e.g. 5 or 5.5).");
+        return;
+    }
+
+    // 5. (Optional) logical check
+    if (minPoints >= maxPoints) {
+        showError("Min Points must be less than Max Points.");
+        return;
+    }
+
+    // 6. All valid — save the new tier rule here
+    // TODO: e.g. insert {tierName, minPoints, maxPoints, discount} into your tiers table/model
+    javax.swing.JOptionPane.showMessageDialog(this, "Tier rule saved successfully!");
+}
+
+private void showError(String message) {
+    javax.swing.JOptionPane.showMessageDialog(
+        this,
+        message,
+        "Invalid Input",
+        javax.swing.JOptionPane.WARNING_MESSAGE
+    );
+    }//GEN-LAST:event_Save_RuleBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -199,18 +266,18 @@ public class New_tier_rule extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
+    private javax.swing.JTextField Discount_Presentaage_Input;
+    private javax.swing.JLabel Discount_Presentaage_Plane_text;
+    private javax.swing.JLabel Discount_and_Delivery_SUB_Interface_Palne_Text;
+    private javax.swing.JTextField Max_Points_Input;
+    private javax.swing.JLabel Max_Points_Plane_text;
+    private javax.swing.JTextField Min_Points_Input;
+    private javax.swing.JLabel Min_Points_Plane_text;
+    private javax.swing.JLabel New_Tier_Rule_Plane_text;
+    private javax.swing.JToggleButton Save_RuleBtn;
+    private javax.swing.JTextField Tier_Name_Input;
+    private javax.swing.JLabel Tier_Name_Plane_text;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JToggleButton jToggleButton1;
     // End of variables declaration//GEN-END:variables
 }
