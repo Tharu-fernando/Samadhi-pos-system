@@ -4,6 +4,10 @@
  */
 package GUI;
 
+import CODE.ProductActionRenderer;
+import CODE.ProductActionEditor;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author HP
@@ -17,6 +21,23 @@ public class Inventory_and_product_management extends javax.swing.JFrame {
      */
     public Inventory_and_product_management() {
         initComponents();
+            jTable1.setRowHeight(40);
+            jTable1.getColumn("ACTION").setCellRenderer(new ProductActionRenderer());
+            jTable1.getColumn("ACTION").setCellEditor(new ProductActionEditor(new ProductActionEditor.ProductActions() {
+                @Override
+            public void onEdit(int modelRow) {
+                // TODO: open edit product dialog pre-filled with this row's data
+            }
+            @Override
+            public void onDelete(int modelRow) {
+                int confirm = JOptionPane.showConfirmDialog(null,
+                        "Delete this product?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel)  jTable1.getModel();
+                    model.removeRow(modelRow);
+                }
+            }
+        }));
     }
 
     /**
@@ -59,17 +80,17 @@ public class Inventory_and_product_management extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "PRODUCT", "SKU", "STOCK", "REORDER LEVEL ", "PRICE"
+                "PRODUCT", "SKU", "STOCK", "REORDER LEVEL ", "PRICE", "ACTION"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Float.class
+                java.lang.Object.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Float.class, java.lang.Object.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -144,7 +165,7 @@ public class Inventory_and_product_management extends javax.swing.JFrame {
      */
     public void addProductToTable(String name, String sku, int stock, int reorderLevel, double price) {
         javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
-        model.addRow(new Object[]{ name, sku, stock, reorderLevel, price });
+        model.addRow(new Object[]{ name, sku, stock, reorderLevel, price, "" });
     }
     
     public static void main(String args[]) {
