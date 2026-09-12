@@ -44,6 +44,7 @@ public class POS_Billing extends javax.swing.JFrame {
         TotalPrice = new javax.swing.JLabel();
         CheckoutBtn = new javax.swing.JButton();
         AllProductsPanel = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -171,6 +172,19 @@ public class POS_Billing extends javax.swing.JFrame {
                 .addGap(41, 41, 41))
         );
 
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        AllProductsPanel.setViewportView(jTable1);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -280,6 +294,7 @@ public class POS_Billing extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
     private javax.swing.JPanel productGridPanel;
 }

@@ -17,6 +17,7 @@ public class PayementScreen extends javax.swing.JFrame {
      */
     public PayementScreen() {
         initComponents();
+        restrictToDigits(AmountTenderedText);//AmountTenderedText
     }
 
     /**
@@ -96,12 +97,16 @@ public class PayementScreen extends javax.swing.JFrame {
 
         CashPaymentBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         CashPaymentBtn.setText("Cash Payment");
+        CashPaymentBtn.addActionListener(this::CashPaymentBtnActionPerformed);
 
         CardTerminalBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         CardTerminalBtn.setText("Card Terminal");
+        CardTerminalBtn.addActionListener(this::CardTerminalBtnActionPerformed);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel1.setText("Amount Tendered");
+
+        AmountTenderedText.addActionListener(this::AmountTenderedTextActionPerformed);
 
         jPanel4.setBackground(new java.awt.Color(224, 242, 241));
 
@@ -234,10 +239,65 @@ public class PayementScreen extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    //AmountTenderedText restriction
+    private void restrictToDigits(javax.swing.JTextField field){
+        ((javax.swing.text.AbstractDocument) field.getDocument()).setDocumentFilter(new javax.swing.text.DocumentFilter(){
+            @Override
+            public void insertString(FilterBypass fb, int offset, String string, javax.swing.text.AttributeSet attr) throws javax.swing.text.BadLocationException{
+                if (string.matches("\\d*")){
+                    super.insertString(fb, offset, string, attr);
+                }
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, javax.swing.text.AttributeSet attrs) throws javax.swing.text.BadLocationException{
+                if (text.matches("\\d*")){
+                    super.replace(fb, offset, length, text, attrs);
+                }
+            }
+        });
+    }
+    
     private void AddProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddProductActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_AddProductActionPerformed
 
+    
+    private void AmountTenderedTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AmountTenderedTextActionPerformed
+        
+    }//GEN-LAST:event_AmountTenderedTextActionPerformed
+
+    
+    //Cash patment
+    private void CashPaymentBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CashPaymentBtnActionPerformed
+        setCashPaymentMode(true);
+    }//GEN-LAST:event_CashPaymentBtnActionPerformed
+
+    //card payment
+    private void CardTerminalBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CardTerminalBtnActionPerformed
+        setCashPaymentMode(false);
+    }//GEN-LAST:event_CardTerminalBtnActionPerformed
+
+    private void setCashPaymentMode(boolean isCash) {
+    AmountTenderedText.setEnabled(isCash);
+    jPanel4.setVisible(true); 
+
+    if (!isCash) {
+        AmountTenderedText.setText("");
+        AmountTenderedText.setBackground(new java.awt.Color(240, 240, 240));
+        ChangeDueLable.setText("Not applicable");
+        jLabel3.setText("—");
+    } else {
+        AmountTenderedText.setBackground(java.awt.Color.WHITE);
+        ChangeDueLable.setText("Change Due");
+        jLabel3.setText("Change");
+    }
+
+    CashPaymentBtn.setBackground(isCash ? new java.awt.Color(11, 107, 109) : null);
+    CashPaymentBtn.setForeground(isCash ? java.awt.Color.WHITE : java.awt.Color.BLACK);
+    CardTerminalBtn.setBackground(isCash ? null : new java.awt.Color(11, 107, 109));
+    CardTerminalBtn.setForeground(isCash ? java.awt.Color.BLACK : java.awt.Color.WHITE);
+}
     /**
      * @param args the command line arguments
      */
