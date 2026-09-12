@@ -47,7 +47,7 @@ public class Create_user extends javax.swing.JFrame {
         btnCashier = new javax.swing.JButton();
         btnAdmin = new javax.swing.JButton();
         btnCreateAcc = new javax.swing.JButton();
-        txtpassword = new javax.swing.JTextField();
+        txtpassword = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -83,6 +83,8 @@ public class Create_user extends javax.swing.JFrame {
                 btnCreateAccActionPerformed(evt);
             }
         });
+
+        txtpassword.setText("jPasswordField1");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -146,9 +148,9 @@ public class Create_user extends javax.swing.JFrame {
                     .addComponent(jLabel5)
                     .addComponent(jLabel6))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtconfirm, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
-                    .addComponent(txtpassword))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtconfirm, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtpassword, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -194,8 +196,10 @@ public class Create_user extends javax.swing.JFrame {
     private void btnCreateAccActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateAccActionPerformed
         String fullName = lblfullname.getText().trim();
         String username = txtusername.getText().trim();
-        String password = txtpassword.getText().trim();
-        String confirm = txtconfirm.getText().trim();
+        char[] passwordChars = txtpassword.getPassword();
+        char[] confirmChars = txtconfirm.getPassword();
+        String password = new String(passwordChars).trim();
+        String confirm = new String(confirmChars).trim();
 
         // --- Validation only, no DB yet ---
         if (fullName.isEmpty()) {
@@ -260,6 +264,9 @@ public class Create_user extends javax.swing.JFrame {
             + "Username: " + username + "\n"
             + "Role: " + selectedRole,
             "Preview", JOptionPane.INFORMATION_MESSAGE);
+
+        java.util.Arrays.fill(passwordChars, '0');
+        java.util.Arrays.fill(confirmChars, '0');
     }//GEN-LAST:event_btnCreateAccActionPerformed
     private void backToSignIn() {
         new Logging().setVisible(true);
@@ -316,7 +323,7 @@ public class Create_user extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JTextField lblfullname;
     private javax.swing.JPasswordField txtconfirm;
-    private javax.swing.JTextField txtpassword;
+    private javax.swing.JPasswordField txtpassword;
     private javax.swing.JTextField txtusername;
     // End of variables declaration//GEN-END:variables
 }

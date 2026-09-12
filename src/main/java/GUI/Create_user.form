@@ -138,9 +138,9 @@
                           <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="txtconfirm" pref="30" max="32767" attributes="0"/>
-                          <Component id="txtpassword" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="txtconfirm" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                          <Component id="txtpassword" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
@@ -230,7 +230,10 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCreateAccActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JTextField" name="txtpassword">
+            <Component class="javax.swing.JPasswordField" name="txtpassword">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="jPasswordField1"/>
+              </Properties>
             </Component>
           </SubComponents>
         </Container>
