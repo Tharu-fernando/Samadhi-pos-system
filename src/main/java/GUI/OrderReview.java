@@ -11,7 +11,7 @@ package GUI;
 public class OrderReview extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(OrderReview.class.getName());
-
+    private String selectedFulfillmentMode = null;
     /**
      * Creates new form OrderReview
      */
@@ -29,6 +29,8 @@ public class OrderReview extends javax.swing.JFrame {
     private void initComponents() {
 
         jPasswordField1 = new javax.swing.JPasswordField();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        jTable5 = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         OrderReviewLable = new javax.swing.JLabel();
@@ -38,7 +40,6 @@ public class OrderReview extends javax.swing.JFrame {
         CustomerName = new javax.swing.JLabel();
         LoyaltyDiscountLable = new javax.swing.JLabel();
         OrderItemsLabel = new javax.swing.JLabel();
-        scrollPane1 = new java.awt.ScrollPane();
         ProductLable = new java.awt.Label();
         QtyLable = new java.awt.Label();
         UnitPriceLable = new javax.swing.JLabel();
@@ -57,8 +58,23 @@ public class OrderReview extends javax.swing.JFrame {
         TotalAmount = new javax.swing.JLabel();
         EditOrderBtn = new javax.swing.JButton();
         ConfirmOrderBtn = new javax.swing.JButton();
+        OrderReviewScrollPane = new javax.swing.JScrollPane();
+        OrderReviewTable = new javax.swing.JTable();
 
         jPasswordField1.setText("jPasswordField1");
+
+        jTable5.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane5.setViewportView(jTable5);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -146,6 +162,7 @@ public class OrderReview extends javax.swing.JFrame {
 
         DeliveryBtn.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         DeliveryBtn.setText("Delivery");
+        DeliveryBtn.addActionListener(this::DeliveryBtnActionPerformed);
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -194,11 +211,32 @@ public class OrderReview extends javax.swing.JFrame {
 
         EditOrderBtn.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         EditOrderBtn.setText("Edit Order");
+        EditOrderBtn.addActionListener(this::EditOrderBtnActionPerformed);
 
         ConfirmOrderBtn.setBackground(new java.awt.Color(26, 92, 94));
         ConfirmOrderBtn.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         ConfirmOrderBtn.setForeground(new java.awt.Color(255, 255, 255));
         ConfirmOrderBtn.setText("Confirm Order");
+        ConfirmOrderBtn.addActionListener(this::ConfirmOrderBtnActionPerformed);
+
+        OrderReviewTable.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        OrderReviewTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {"Budhu Pilma",  new Integer(2),  new Float(200.0),  new Float(400.0)}
+            },
+            new String [] {
+                "Product", "Qty", "Unit Price", "Line Total"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.Integer.class, java.lang.Float.class, java.lang.Float.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        OrderReviewScrollPane.setViewportView(OrderReviewTable);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -217,38 +255,38 @@ public class OrderReview extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(54, 54, 54)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(FulfillmentModeLable))
+                        .addGap(226, 226, 226)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(DeliveryFeeLabel)
+                            .addComponent(TotalAmountLabel)
+                            .addComponent(LoyaltyDiscountPresentage, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(SubtotalLable, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(57, 57, 57)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(LoyaltyDiscount)
+                            .addComponent(Subtotal, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(DeliveryFee)
+                            .addComponent(TotalAmount)))
                     .addComponent(CustomerDetailsLable)
                     .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(OrderItemsLabel)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(scrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
-                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(FulfillmentModeLable))
-                            .addGap(226, 226, 226)
-                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel3Layout.createSequentialGroup()
-                                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(DeliveryFeeLabel)
-                                            .addComponent(TotalAmountLabel))
-                                        .addGap(261, 261, 261))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                                        .addComponent(EditOrderBtn)
-                                        .addGap(37, 37, 37)))
-                                .addGroup(jPanel3Layout.createSequentialGroup()
-                                    .addComponent(LoyaltyDiscountPresentage, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(216, 216, 216))
-                                .addComponent(SubtotalLable, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(LoyaltyDiscount)
-                                .addComponent(Subtotal, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(ConfirmOrderBtn)
-                                .addComponent(DeliveryFee)
-                                .addComponent(TotalAmount))
-                            .addGap(0, 0, Short.MAX_VALUE))))
-                .addContainerGap(21, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(ConfirmOrderBtn)
+                        .addGap(12, 12, 12)))
+                .addContainerGap(43, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(OrderReviewScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 1092, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(58, 58, 58))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(EditOrderBtn)
+                        .addGap(250, 250, 250))))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -267,11 +305,11 @@ public class OrderReview extends javax.swing.JFrame {
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(UnitPriceLable)
                         .addComponent(LineTotalLable)))
-                .addGap(1, 1, 1)
-                .addComponent(scrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(OrderReviewScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
+                        .addGap(29, 29, 29)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(SubtotalLable, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(Subtotal))
@@ -288,15 +326,15 @@ public class OrderReview extends javax.swing.JFrame {
                             .addComponent(TotalAmountLabel)
                             .addComponent(TotalAmount)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(47, 47, 47)
+                        .addGap(55, 55, 55)
                         .addComponent(FulfillmentModeLable)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(EditOrderBtn)
                     .addComponent(ConfirmOrderBtn))
-                .addGap(24, 24, 24))
+                .addContainerGap(34, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -315,7 +353,7 @@ public class OrderReview extends javax.swing.JFrame {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -333,9 +371,41 @@ public class OrderReview extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void PickupBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PickupBtnActionPerformed
-        // TODO add your handling code here:
+        selectedFulfillmentMode = "Pickup";
+        updateFulfillmentButtonStyles();
     }//GEN-LAST:event_PickupBtnActionPerformed
 
+    private void EditOrderBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditOrderBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_EditOrderBtnActionPerformed
+
+    private void DeliveryBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeliveryBtnActionPerformed
+        selectedFulfillmentMode = "Delivery";
+        updateFulfillmentButtonStyles();
+    }//GEN-LAST:event_DeliveryBtnActionPerformed
+
+    private void ConfirmOrderBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConfirmOrderBtnActionPerformed
+            if (selectedFulfillmentMode == null) {
+           javax.swing.JOptionPane.showMessageDialog(this,
+               "Please select Pickup or Delivery before confirming the order.",
+               "Fulfillment Mode Required",
+               javax.swing.JOptionPane.WARNING_MESSAGE);
+           return;
+       }
+    }//GEN-LAST:event_ConfirmOrderBtnActionPerformed
+
+    //Conform order Rules
+    private void updateFulfillmentButtonStyles() {
+    boolean isPickup = "Pickup".equals(selectedFulfillmentMode);
+    boolean isDelivery = "Delivery".equals(selectedFulfillmentMode);
+
+    PickupBtn.setBackground(isPickup ? new java.awt.Color(11, 107, 109) : null);
+    PickupBtn.setForeground(isPickup ? java.awt.Color.WHITE : java.awt.Color.BLACK);
+
+    DeliveryBtn.setBackground(isDelivery ? new java.awt.Color(11, 107, 109) : null);
+    DeliveryBtn.setForeground(isDelivery ? java.awt.Color.WHITE : java.awt.Color.BLACK);
+}
+    
     /**
      * @param args the command line arguments
      */
@@ -376,6 +446,8 @@ public class OrderReview extends javax.swing.JFrame {
     private javax.swing.JLabel LoyaltyDiscountPresentage;
     private javax.swing.JLabel OrderItemsLabel;
     private javax.swing.JLabel OrderReviewLable;
+    private javax.swing.JScrollPane OrderReviewScrollPane;
+    private javax.swing.JTable OrderReviewTable;
     private javax.swing.JButton PickupBtn;
     private java.awt.Label ProductLable;
     private java.awt.Label QtyLable;
@@ -390,6 +462,7 @@ public class OrderReview extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPasswordField jPasswordField1;
-    private java.awt.ScrollPane scrollPane1;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JTable jTable5;
     // End of variables declaration//GEN-END:variables
 }
