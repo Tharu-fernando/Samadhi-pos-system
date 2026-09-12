@@ -69,8 +69,6 @@ public class Create_user extends javax.swing.JFrame {
 
         jLabel6.setText("Confirm Password");
 
-        txtconfirm.setText("jPasswordField1");
-
         jLabel7.setText("Role");
 
         btnCashier.setText("Cashier");
@@ -83,8 +81,6 @@ public class Create_user extends javax.swing.JFrame {
                 btnCreateAccActionPerformed(evt);
             }
         });
-
-        txtpassword.setText("jPasswordField1");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);

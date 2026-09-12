@@ -203,9 +203,6 @@
               </Properties>
             </Component>
             <Component class="javax.swing.JPasswordField" name="txtconfirm">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="jPasswordField1"/>
-              </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel7">
               <Properties>
@@ -231,9 +228,6 @@
               </Events>
             </Component>
             <Component class="javax.swing.JPasswordField" name="txtpassword">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="jPasswordField1"/>
-              </Properties>
             </Component>
           </SubComponents>
         </Container>

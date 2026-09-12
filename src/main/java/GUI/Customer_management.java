@@ -4,6 +4,9 @@
  */
 package GUI;
 
+import CODE.CustomerActionRenderer;
+import CODE.CustomerActionEditor;
+import javax.swing.JOptionPane;
 /**
  *
  * @author tharu
@@ -14,9 +17,27 @@ public class Customer_management extends javax.swing.JFrame {
      * Creates new form Customer_management
      */
     public Customer_management() {
-        initComponents();
-        btnadd.addActionListener(evt -> openNewCustomerDialog());
-    }
+    initComponents();
+    jTable1.setRowHeight(40);
+    btnadd.addActionListener(evt -> openNewCustomerDialog());
+
+    jTable1.getColumn("Action").setCellRenderer(new CustomerActionRenderer());
+    jTable1.getColumn("Action").setCellEditor(new CustomerActionEditor(new CustomerActionEditor.CustomerActions() {
+        @Override
+        public void onEdit(int modelRow) {
+            // TODO: open New_customer dialog pre-filled with this row's data
+        }
+        @Override
+        public void onDelete(int modelRow) {
+            int confirm = JOptionPane.showConfirmDialog(Customer_management.this,
+                    "Delete this customer?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
+                model.removeRow(modelRow);
+            }
+        }
+    }));
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -43,19 +64,19 @@ public class Customer_management extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "NAME", "PHONE", "LOYALTY", "POINTS", "VISITS"
+                "NAME", "PHONE", "LOYALTY", "POINTS", "VISITS", "Action"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Object.class
             };
 
             public Class getColumnClass(int columnIndex) {
