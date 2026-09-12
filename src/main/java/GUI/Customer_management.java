@@ -15,6 +15,7 @@ public class Customer_management extends javax.swing.JFrame {
      */
     public Customer_management() {
         initComponents();
+        btnadd.addActionListener(evt -> openNewCustomerDialog());
     }
 
     /**
@@ -31,7 +32,7 @@ public class Customer_management extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
+        btnadd = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -63,9 +64,9 @@ public class Customer_management extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(jTable1);
 
-        jButton1.setBackground(new java.awt.Color(0, 152, 51));
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("+   New Customer");
+        btnadd.setBackground(new java.awt.Color(0, 152, 51));
+        btnadd.setForeground(new java.awt.Color(255, 255, 255));
+        btnadd.setText("+   New Customer");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -82,7 +83,7 @@ public class Customer_management extends javax.swing.JFrame {
                             .addComponent(jLabel1)
                             .addComponent(jLabel2))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnadd, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(78, 78, 78))))
         );
         jPanel1Layout.setVerticalGroup(
@@ -91,7 +92,7 @@ public class Customer_management extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(71, 71, 71)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnadd, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(62, 62, 62)
                         .addComponent(jLabel1)
@@ -116,6 +117,11 @@ public class Customer_management extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+     private void openNewCustomerDialog() {
+        New_customer dialog = new New_customer(this, true);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
     /**
      * @param args the command line arguments
      */
@@ -152,7 +158,7 @@ public class Customer_management extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnadd;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
