@@ -4,6 +4,9 @@
  */
 package GUI;
 
+import java.math.BigDecimal;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author User
@@ -11,13 +14,33 @@ package GUI;
 public class PayementScreen extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(PayementScreen.class.getName());
-
+    
+    private int orderId = -1;
+    private BigDecimal totalAmount = BigDecimal.ZERO;
+    private boolean isCashSelected = true;
+    private final PaymentDAO paymentDAO = new PaymentDAO();
     /**
      * Creates new form PayementScreen
      */
+
     public PayementScreen() {
         initComponents();
         restrictToDigits(AmountTenderedText);//AmountTenderedText
+        ConfirmBtn.addActionListener(this::ConfirmBtnActionPerformed);
+    }
+
+    /**
+     * Opens the payment screen for a specific order and loads the amount due.
+     */
+    public PayementScreen(int orderId) {
+        this();
+        this.orderId = orderId;
+        loadAmountDue();
+    }
+
+    private void loadAmountDue() {
+        totalAmount = paymentDAO.readAmountDue(orderId);
+        TotalePriceLable.setText("Rs. " + String.format("%,.2f", totalAmount));
     }
 
     /**
@@ -264,7 +287,13 @@ public class PayementScreen extends javax.swing.JFrame {
 
     
     private void AmountTenderedTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AmountTenderedTextActionPerformed
-        
+        try {
+            BigDecimal tendered = new BigDecimal(AmountTenderedText.getText().trim());
+            BigDecimal change = tendered.subtract(totalAmount);
+            jLabel3.setText("Rs. " + String.format("%,.2f", change.max(BigDecimal.ZERO)));
+        } catch (NumberFormatException e) {
+            // ignore here; real validation happens on Confirm
+        }
     }//GEN-LAST:event_AmountTenderedTextActionPerformed
 
     
@@ -279,6 +308,8 @@ public class PayementScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_CardTerminalBtnActionPerformed
 
     private void setCashPaymentMode(boolean isCash) {
+    this.isCashSelected = isCash;
+
     AmountTenderedText.setEnabled(isCash);
     jPanel4.setVisible(true); 
 
@@ -298,6 +329,53 @@ public class PayementScreen extends javax.swing.JFrame {
     CardTerminalBtn.setBackground(isCash ? null : new java.awt.Color(11, 107, 109));
     CardTerminalBtn.setForeground(isCash ? java.awt.Color.BLACK : java.awt.Color.WHITE);
 }
+    
+    private void ConfirmBtnActionPerformed(java.awt.event.ActionEvent evt) {
+        if (orderId == -1) {
+            JOptionPane.showMessageDialog(this, "No order loaded for this payment screen.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String paymentMethod = isCashSelected ? "Cash" : "Card";
+        BigDecimal amountPaid;
+
+        if (isCashSelected) {
+            String tenderedText = AmountTenderedText.getText().trim();
+            if (tenderedText.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter the amount tendered.",
+                        "Validation Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            try {
+                amountPaid = new BigDecimal(tenderedText);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Amount tendered must be a valid number.",
+                        "Validation Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (amountPaid.compareTo(totalAmount) < 0) {
+                JOptionPane.showMessageDialog(this, "Amount tendered is less than the amount due.",
+                        "Insufficient Amount", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            BigDecimal change = amountPaid.subtract(totalAmount);
+            jLabel3.setText("Rs. " + String.format("%,.2f", change));
+        } else {
+            amountPaid = totalAmount;
+        }
+
+        boolean success = paymentDAO.createPayment(orderId, paymentMethod, amountPaid);
+        if (!success) {
+            JOptionPane.showMessageDialog(this, "Failed to save the payment. Please try again.",
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        new ReceiptInvoicePrintout(orderId).setVisible(true);
+        this.dispose();
+    }
+
     /**
      * @param args the command line arguments
      */

@@ -4,19 +4,76 @@
  */
 package GUI;
 
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author User
  */
 public class ReceiptInvoicePrintout extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ReceiptInvoicePrintout.class.getName());
+        private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ReceiptInvoicePrintout.class.getName());
+
+    private int orderId = -1;
+    private final ReceiptDAO receiptDAO = new ReceiptDAO();
 
     /**
      * Creates new form ReceiptInvoicePrintout
      */
     public ReceiptInvoicePrintout() {
         initComponents();
+    }
+
+    /**
+     * Opens the receipt for a specific order and loads its data.
+     */
+    public ReceiptInvoicePrintout(int orderId) {
+        this();
+        this.orderId = orderId;
+        loadReceipt();
+    }
+
+    private void loadReceipt() {
+        if (orderId == -1) {
+            return;
+        }
+
+        ReceiptDAO.ReceiptHeader header = receiptDAO.readReceiptHeader(orderId);
+        if (header == null) {
+            logger.log(java.util.logging.Level.WARNING, "No receipt data found for order {0}", orderId);
+            JOptionPane.showMessageDialog(this, "Could not load receipt details for this order.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        ReciptId.setText("#ORD-" + orderId);
+
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd MMM yyyy, hh:mm a");
+        String formattedDate = header.orderDate != null ? sdf.format(header.orderDate) : "-";
+        Date.setText(formattedDate);
+        DateAndTime.setText(formattedDate);
+
+        Cashier.setText(header.cashierName);
+        Subtotal.setText("Rs. " + String.format("%,.2f", header.subtotal));
+        Discount.setText("Rs. " + String.format("%,.2f", header.discount));
+        Total.setText("Rs. " + String.format("%,.2f", header.total));
+        PaymentMethod.setText(header.paymentMethod);
+        PaidinfullLabel.setText("Paid in full");
+
+        if ("Cash".equals(header.paymentMethod)) {
+            java.math.BigDecimal change = header.amountPaid.subtract(header.total);
+            ShowBalance.setText("Cash received · Rs. " + String.format("%,.2f", header.amountPaid)
+                    + " · Change Rs. " + String.format("%,.2f", change));
+        } else {
+            ShowBalance.setText("Paid by Card · Rs. " + String.format("%,.2f", header.amountPaid));
+        }
+
+        Object[][] items = receiptDAO.readReceiptItems(orderId);
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setRowCount(0);
+        for (Object[] row : items) {
+            model.addRow(row);
+        }
     }
 
     /**
@@ -360,7 +417,17 @@ public class ReceiptInvoicePrintout extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        try {
+            boolean complete = jTable1.print();
+            if (!complete) {
+                JOptionPane.showMessageDialog(this, "Printing was cancelled.",
+                        "Print", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (java.awt.print.PrinterException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Failed to print receipt", e);
+            JOptionPane.showMessageDialog(this, "Could not print receipt: " + e.getMessage(),
+                    "Print Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
