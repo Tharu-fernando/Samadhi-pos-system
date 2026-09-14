@@ -4,6 +4,9 @@
  */
 package GUI;
 
+import CODE.OrderDAO;
+import java.math.BigDecimal;
+import javax.swing.JOptionPane;
 /**
  *
  * @author User
@@ -12,11 +15,20 @@ public class OrderReview extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(OrderReview.class.getName());
     private String selectedFulfillmentMode = null;
+    private final java.util.List<CODE.OrderDAO.CartItem> cart;
+    private final CODE.OrderDAO orderDAO = new CODE.OrderDAO();
+    private java.math.BigDecimal computedSubtotal = java.math.BigDecimal.ZERO;
     /**
      * Creates new form OrderReview
      */
     public OrderReview() {
+        this(new java.util.ArrayList<>());
+    }
+
+    public OrderReview(java.util.List<CODE.OrderDAO.CartItem> cart) {
         initComponents();
+        this.cart = cart;
+        populateOrderReview();
     }
 
     /**
@@ -28,9 +40,6 @@ public class OrderReview extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPasswordField1 = new javax.swing.JPasswordField();
-        jScrollPane5 = new javax.swing.JScrollPane();
-        jTable5 = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         OrderReviewLable = new javax.swing.JLabel();
@@ -60,21 +69,6 @@ public class OrderReview extends javax.swing.JFrame {
         ConfirmOrderBtn = new javax.swing.JButton();
         OrderReviewScrollPane = new javax.swing.JScrollPane();
         OrderReviewTable = new javax.swing.JTable();
-
-        jPasswordField1.setText("jPasswordField1");
-
-        jTable5.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane5.setViewportView(jTable5);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -222,7 +216,7 @@ public class OrderReview extends javax.swing.JFrame {
         OrderReviewTable.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         OrderReviewTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {"Budhu Pilma",  new Integer(2),  new Float(200.0),  new Float(400.0)}
+
             },
             new String [] {
                 "Product", "Qty", "Unit Price", "Line Total"
@@ -386,12 +380,29 @@ public class OrderReview extends javax.swing.JFrame {
 
     private void ConfirmOrderBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConfirmOrderBtnActionPerformed
             if (selectedFulfillmentMode == null) {
-           javax.swing.JOptionPane.showMessageDialog(this,
-               "Please select Pickup or Delivery before confirming the order.",
-               "Fulfillment Mode Required",
-               javax.swing.JOptionPane.WARNING_MESSAGE);
-           return;
-       }
+                javax.swing.JOptionPane.showMessageDialog(this,
+                    "Please select Pickup or Delivery before confirming the order.",
+                    "Fulfillment Mode Required",
+                    javax.swing.JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // TODO: replace hardcoded IDs once customer lookup and Session.currentUserId are wired here
+            int customerId = 1;
+            int currentUserId = 8;
+
+            int orderId = orderDAO.createOrder(customerId, currentUserId, cart,
+                    java.math.BigDecimal.ZERO, selectedFulfillmentMode);
+
+            if (orderId == -1) {
+                javax.swing.JOptionPane.showMessageDialog(this,
+                    "Failed to create the order. Please try again.",
+                    "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            new PayementScreen(orderId).setVisible(true);
+            this.dispose();
     }//GEN-LAST:event_ConfirmOrderBtnActionPerformed
 
     //Conform order Rules
@@ -405,7 +416,35 @@ public class OrderReview extends javax.swing.JFrame {
     DeliveryBtn.setBackground(isDelivery ? new java.awt.Color(11, 107, 109) : null);
     DeliveryBtn.setForeground(isDelivery ? java.awt.Color.WHITE : java.awt.Color.BLACK);
 }
-    
+    private void populateOrderReview() {
+        javax.swing.table.DefaultTableModel model =
+                (javax.swing.table.DefaultTableModel) OrderReviewTable.getModel();
+        model.setRowCount(0); // clear any existing rows
+
+        computedSubtotal = java.math.BigDecimal.ZERO;
+
+        for (CODE.OrderDAO.CartItem item : cart) {
+            model.addRow(new Object[]{
+                item.productName,
+                item.quantity,
+                item.unitPrice,
+                item.lineTotal()
+            });
+            computedSubtotal = computedSubtotal.add(item.lineTotal());
+        }
+
+        // TODO: replace with real loyalty-tier lookup once loyalty_tiers is wired
+        java.math.BigDecimal loyaltyDiscount = java.math.BigDecimal.ZERO;
+        // TODO: replace with real delivery fee once Delivery module logic is wired
+        java.math.BigDecimal deliveryFee = java.math.BigDecimal.ZERO;
+
+        java.math.BigDecimal total = computedSubtotal.subtract(loyaltyDiscount).add(deliveryFee);
+
+        Subtotal.setText(String.format("Rs. %.2f", computedSubtotal));
+        LoyaltyDiscount.setText(String.format("Rs. %.2f", loyaltyDiscount));
+        DeliveryFee.setText(String.format("Rs. %.2f", deliveryFee));
+        TotalAmount.setText(String.format("Rs. %.2f", total));
+    }
     /**
      * @param args the command line arguments
      */
@@ -461,8 +500,5 @@ public class OrderReview extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JPasswordField jPasswordField1;
-    private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JTable jTable5;
     // End of variables declaration//GEN-END:variables
 }
