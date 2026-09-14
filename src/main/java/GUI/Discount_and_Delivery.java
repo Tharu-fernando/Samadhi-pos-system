@@ -31,7 +31,6 @@ public class Discount_and_Delivery extends javax.swing.JFrame {
         jSplitPane1 = new javax.swing.JSplitPane();
         jLabel17 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
-        Discount_and_Delivery_Plane_text = new javax.swing.JLabel();
         Loyalty_Tiers_and_Delivery_Plane_text = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         Delivery_Details_Plane_text = new javax.swing.JLabel();
@@ -40,30 +39,30 @@ public class Discount_and_Delivery extends javax.swing.JFrame {
         Apply_SaveBtn = new javax.swing.JToggleButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        jPanel2 = new javax.swing.JPanel();
+        Discount_and_Delivery_Plane_text = new javax.swing.JLabel();
 
         jLabel17.setText("jLabel17");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel1.setBackground(new java.awt.Color(204, 255, 255));
+        jPanel1.setBackground(new java.awt.Color(246, 245, 242));
 
-        Discount_and_Delivery_Plane_text.setFont(new java.awt.Font("SimSun", 1, 12)); // NOI18N
-        Discount_and_Delivery_Plane_text.setForeground(new java.awt.Color(153, 153, 153));
-        Discount_and_Delivery_Plane_text.setText("DISCOUNT & DELIVERY");
-
-        Loyalty_Tiers_and_Delivery_Plane_text.setFont(new java.awt.Font("Berlin Sans FB", 0, 21)); // NOI18N
+        Loyalty_Tiers_and_Delivery_Plane_text.setFont(new java.awt.Font("Segoe UI", 0, 21)); // NOI18N
         Loyalty_Tiers_and_Delivery_Plane_text.setText("Loyalty Tiers & Delivery");
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
+        Delivery_Details_Plane_text.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         Delivery_Details_Plane_text.setText("Delivery Details - ORD - 1043");
 
+        Delivery_Address_Plane_Text.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         Delivery_Address_Plane_Text.setText("Delivery Address");
 
         Delivery_Address_Input.addActionListener(this::Delivery_Address_InputActionPerformed);
 
-        Apply_SaveBtn.setBackground(new java.awt.Color(0, 153, 51));
-        Apply_SaveBtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        Apply_SaveBtn.setBackground(new java.awt.Color(11, 107, 109));
+        Apply_SaveBtn.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         Apply_SaveBtn.setForeground(new java.awt.Color(255, 255, 255));
         Apply_SaveBtn.setText("Apply & Save");
         Apply_SaveBtn.addActionListener(this::Apply_SaveBtnActionPerformed);
@@ -84,13 +83,13 @@ public class Discount_and_Delivery extends javax.swing.JFrame {
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
+                .addGap(34, 34, 34)
                 .addComponent(Delivery_Details_Plane_text)
                 .addGap(18, 18, 18)
                 .addComponent(Delivery_Address_Plane_Text)
-                .addGap(18, 18, 18)
+                .addGap(34, 34, 34)
                 .addComponent(Delivery_Address_Input, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(68, 68, 68)
+                .addGap(36, 36, 36)
                 .addComponent(Apply_SaveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(28, Short.MAX_VALUE))
         );
@@ -115,36 +114,60 @@ public class Discount_and_Delivery extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(jTable1);
 
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+
+        Discount_and_Delivery_Plane_text.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        Discount_and_Delivery_Plane_text.setText("DISCOUNT & DELIVERY");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(33, 33, 33)
+                .addComponent(Discount_and_Delivery_Plane_text)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(34, 34, 34)
+                .addComponent(Discount_and_Delivery_Plane_text)
+                .addContainerGap(34, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(33, 33, 33)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(Discount_and_Delivery_Plane_text)
-                            .addComponent(Loyalty_Tiers_and_Delivery_Plane_text, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(Loyalty_Tiers_and_Delivery_Plane_text, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(19, 19, 19)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 560, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(34, 34, 34)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(27, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(25, 25, 25))))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(26, 26, 26)
-                .addComponent(Discount_and_Delivery_Plane_text)
+                .addContainerGap()
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(Loyalty_Tiers_and_Delivery_Plane_text, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(42, 42, 42)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(324, Short.MAX_VALUE))
+                .addContainerGap(227, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -228,6 +251,7 @@ public class Discount_and_Delivery extends javax.swing.JFrame {
     private javax.swing.JLabel Loyalty_Tiers_and_Delivery_Plane_text;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSplitPane jSplitPane1;

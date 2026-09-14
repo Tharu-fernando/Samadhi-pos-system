@@ -31,7 +31,6 @@ public class Delivery_Tracking extends javax.swing.JFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         jTextArea3 = new javax.swing.JTextArea();
         jPanel1 = new javax.swing.JPanel();
-        Delivery_Tracking_Plain_Text = new javax.swing.JLabel();
         PendingBtn = new javax.swing.JButton();
         DispatchedBtn = new javax.swing.JButton();
         DeliveredBtn = new javax.swing.JButton();
@@ -43,6 +42,8 @@ public class Delivery_Tracking extends javax.swing.JFrame {
         Dispatched_TextArea = new javax.swing.JTextArea();
         jScrollPane1 = new javax.swing.JScrollPane();
         ORD_Tracking_Table = new javax.swing.JTable();
+        jPanel2 = new javax.swing.JPanel();
+        Delivery_Tracking_Plain_Text = new javax.swing.JLabel();
 
         jTextArea3.setColumns(20);
         jTextArea3.setRows(5);
@@ -50,16 +51,16 @@ public class Delivery_Tracking extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel1.setBackground(new java.awt.Color(204, 255, 255));
+        jPanel1.setBackground(new java.awt.Color(246, 245, 242));
 
-        Delivery_Tracking_Plain_Text.setFont(new java.awt.Font("Segoe UI", 1, 21)); // NOI18N
-        Delivery_Tracking_Plain_Text.setText("Delivery Tracking");
-
+        PendingBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         PendingBtn.setText("Pending");
 
+        DispatchedBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         DispatchedBtn.setText("Dispatched");
         DispatchedBtn.addActionListener(this::DispatchedBtnActionPerformed);
 
+        DeliveredBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         DeliveredBtn.setText("Delivered");
 
         Pending_TextArea.setColumns(20);
@@ -79,6 +80,8 @@ public class Delivery_Tracking extends javax.swing.JFrame {
         Dispatched_TextArea.setRows(5);
         Dispatched_TextArea.setText("Dispatched\n12");
         jScrollPane5.setViewportView(Dispatched_TextArea);
+
+        jScrollPane1.setBackground(new java.awt.Color(255, 255, 255));
 
         ORD_Tracking_Table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -103,6 +106,28 @@ public class Delivery_Tracking extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(ORD_Tracking_Table);
 
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+
+        Delivery_Tracking_Plain_Text.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        Delivery_Tracking_Plain_Text.setText("Delivery Tracking");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addComponent(Delivery_Tracking_Plain_Text)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(33, 33, 33)
+                .addComponent(Delivery_Tracking_Plain_Text)
+                .addContainerGap(38, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -110,7 +135,6 @@ public class Delivery_Tracking extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(19, 19, 19)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(Delivery_Tracking_Plain_Text)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -120,32 +144,35 @@ public class Delivery_Tracking extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(DeliveredBtn))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(59, 59, 59)
-                                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(62, 62, 62)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(44, 44, 44)
+                                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(56, 56, 56)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1160, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(21, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addComponent(Delivery_Tracking_Plain_Text)
-                .addGap(18, 18, 18)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(47, 47, 47)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(PendingBtn)
                     .addComponent(DispatchedBtn)
                     .addComponent(DeliveredBtn))
-                .addGap(44, 44, 44)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(43, 43, 43)
+                .addGap(28, 28, 28)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
+                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
+                .addGap(36, 36, 36)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(311, Short.MAX_VALUE))
+                .addContainerGap(235, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -201,6 +228,7 @@ public class Delivery_Tracking extends javax.swing.JFrame {
     private javax.swing.JButton PendingBtn;
     private javax.swing.JTextArea Pending_TextArea;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;

@@ -44,26 +44,33 @@ public class New_tier_rule extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel1.setBackground(new java.awt.Color(204, 255, 255));
+        jPanel1.setBackground(new java.awt.Color(246, 245, 242));
 
-        Discount_and_Delivery_SUB_Interface_Palne_Text.setText("Discount & Delivery - SUB-Interface");
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+
+        Discount_and_Delivery_SUB_Interface_Palne_Text.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        Discount_and_Delivery_SUB_Interface_Palne_Text.setText("Discount & Delivery");
 
         New_Tier_Rule_Plane_text.setFont(new java.awt.Font("Segoe UI", 1, 21)); // NOI18N
         New_Tier_Rule_Plane_text.setText("New Tier Rule");
 
+        Tier_Name_Plane_text.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         Tier_Name_Plane_text.setText("Tier Name");
 
+        Min_Points_Plane_text.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         Min_Points_Plane_text.setText("Min Points");
 
         Max_Points_Input.addActionListener(this::Max_Points_InputActionPerformed);
 
+        Max_Points_Plane_text.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         Max_Points_Plane_text.setText("Max Points");
 
         Min_Points_Input.addActionListener(this::Min_Points_InputActionPerformed);
 
+        Discount_Presentaage_Plane_text.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         Discount_Presentaage_Plane_text.setText("Discount Presentaage");
 
-        Save_RuleBtn.setBackground(new java.awt.Color(0, 153, 51));
+        Save_RuleBtn.setBackground(new java.awt.Color(11, 107, 109));
         Save_RuleBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         Save_RuleBtn.setForeground(new java.awt.Color(255, 255, 255));
         Save_RuleBtn.setText("Save Rule");
@@ -74,32 +81,24 @@ public class New_tier_rule extends javax.swing.JFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(19, 19, 19)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(Tier_Name_Plane_text)
-                            .addComponent(Tier_Name_Input, javax.swing.GroupLayout.PREFERRED_SIZE, 395, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(New_Tier_Rule_Plane_text)
-                            .addComponent(Discount_and_Delivery_SUB_Interface_Palne_Text)))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(19, 19, 19)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(Save_RuleBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 395, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(Discount_Presentaage_Plane_text, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(jPanel2Layout.createSequentialGroup()
-                                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addGroup(jPanel2Layout.createSequentialGroup()
-                                            .addComponent(Min_Points_Plane_text)
-                                            .addGap(140, 140, 140))
-                                        .addGroup(jPanel2Layout.createSequentialGroup()
-                                            .addComponent(Min_Points_Input)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
-                                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(Max_Points_Plane_text, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(Max_Points_Input, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addComponent(Discount_Presentaage_Input)))))
+                    .addComponent(Discount_and_Delivery_SUB_Interface_Palne_Text)
+                    .addComponent(Tier_Name_Plane_text)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(Save_RuleBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 395, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(Discount_Presentaage_Plane_text, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(Min_Points_Input, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(Min_Points_Plane_text, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(Max_Points_Input, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(Max_Points_Plane_text, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(Discount_Presentaage_Input)
+                        .addComponent(Tier_Name_Input))
+                    .addComponent(New_Tier_Rule_Plane_text))
                 .addContainerGap(21, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -135,7 +134,7 @@ public class New_tier_rule extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(398, Short.MAX_VALUE)
+                .addContainerGap(385, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(367, 367, 367))
         );
@@ -144,7 +143,7 @@ public class New_tier_rule extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(103, 103, 103)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(125, Short.MAX_VALUE))
+                .addContainerGap(109, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
