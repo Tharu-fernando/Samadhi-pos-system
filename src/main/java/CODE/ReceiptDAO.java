@@ -4,10 +4,8 @@
  */
 package CODE;
 
-import CODE.DBConnection;
 import java.math.BigDecimal;
 import java.sql.*;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -15,6 +13,7 @@ import javax.swing.JOptionPane;
  */
 public class ReceiptDAO {
 
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ReceiptDAO.class.getName());
     // Simple holder for the receipt header fields
     public static class ReceiptHeader {
         public Timestamp orderDate;
@@ -54,7 +53,7 @@ public class ReceiptDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace(); // TEMPORARY
+            logger.log(java.util.logging.Level.SEVERE, "Error reading receipt header for order " + orderId, e);
         }
         return null;
     }
@@ -82,7 +81,7 @@ public class ReceiptDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace(); // TEMPORARY
+            logger.log(java.util.logging.Level.SEVERE, "Error reading receipt items for order " + orderId, e);
         }
 
         return rows.toArray(new Object[0][]);
