@@ -4,6 +4,13 @@
  */
 package GUI;
 
+import CODE.DBConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author senub
@@ -15,8 +22,60 @@ public class Discount_and_Delivery extends javax.swing.JFrame {
     /**
      * Creates new form Discount_and_Loyalty
      */
+    private int orderId;
+
     public Discount_and_Delivery() {
+        this(0); // fallback for NetBeans Design view / no-arg testing — not for real use
+    }
+
+    public Discount_and_Delivery(int orderId) {
         initComponents();
+        this.orderId = orderId;
+        Delivery_Details_Plane_text.setText("Delivery Details - ORD - " + orderId);
+        loadLoyaltyTiers();
+    }
+    
+    public void loadLoyaltyTiers() {
+        String sql = "SELECT tier_name, min_points, max_points, discount_percentage FROM loyalty_tiers";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+            model.setRowCount(0);
+
+            while (rs.next()) {
+                int min = rs.getInt("min_points");
+                Object maxObj = rs.getObject("max_points");
+                Integer max = (maxObj == null) ? null : rs.getInt("max_points");
+                String range = (max == null) ? min + "+" : min + " - " + max + " pts";
+                model.addRow(new Object[]{
+                    rs.getString("tier_name"),
+                    range,
+                    rs.getBigDecimal("discount_percentage") + "%",
+                    null
+                });
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Failed to load tiers: " + e.getMessage(),
+                "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void saveDeliveryAddress(int orderId, String address) {
+        String sql = "INSERT INTO deliveries (order_id, delivery_address, delivery_status) "
+                   + "VALUES (?, ?, 'Pending') "
+                   + "ON DUPLICATE KEY UPDATE delivery_address = VALUES(delivery_address)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            ps.setString(2, address);
+            ps.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Saved successfully!");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Failed to save address: " + e.getMessage(),
+                "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -28,8 +87,6 @@ public class Discount_and_Delivery extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jSplitPane1 = new javax.swing.JSplitPane();
-        jLabel17 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         Loyalty_Tiers_and_Delivery_Plane_text = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
@@ -41,10 +98,9 @@ public class Discount_and_Delivery extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         Discount_and_Delivery_Plane_text = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
-        jLabel17.setText("jLabel17");
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(246, 245, 242));
 
@@ -54,7 +110,7 @@ public class Discount_and_Delivery extends javax.swing.JFrame {
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
         Delivery_Details_Plane_text.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        Delivery_Details_Plane_text.setText("Delivery Details - ORD - 1043");
+        Delivery_Details_Plane_text.setText("Delivery Details ");
 
         Delivery_Address_Plane_Text.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         Delivery_Address_Plane_Text.setText("Delivery Address");
@@ -96,9 +152,7 @@ public class Discount_and_Delivery extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {"Bronz", "0 - 499 pts", "0%", null},
-                {"Silver", "500 -1499 pts", "5%", null},
-                {"Gold", "1500 +", "10%", null}
+                {null, null, null, null}
             },
             new String [] {
                 "TIER", "POINT RANGE", "DISCOUNT", "Edit / Delete"
@@ -119,6 +173,9 @@ public class Discount_and_Delivery extends javax.swing.JFrame {
         Discount_and_Delivery_Plane_text.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         Discount_and_Delivery_Plane_text.setText("DISCOUNT & DELIVERY");
 
+        jButton1.setText("+ New Tier Rule");
+        jButton1.addActionListener(this::jButton1ActionPerformed);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -126,14 +183,18 @@ public class Discount_and_Delivery extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(33, 33, 33)
                 .addComponent(Discount_and_Delivery_Plane_text)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addGap(74, 74, 74))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(34, 34, 34)
-                .addComponent(Discount_and_Delivery_Plane_text)
-                .addContainerGap(34, Short.MAX_VALUE))
+                .addGap(22, 22, 22)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Discount_and_Delivery_Plane_text))
+                .addContainerGap(35, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -167,7 +228,7 @@ public class Discount_and_Delivery extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(227, Short.MAX_VALUE))
+                .addContainerGap(226, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -189,32 +250,39 @@ public class Discount_and_Delivery extends javax.swing.JFrame {
     private void Apply_SaveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Apply_SaveBtnActionPerformed
         String address = Delivery_Address_Input.getText().trim();
 
-    if (address.isEmpty()) {
-        // Highlight the field in red
-        Delivery_Address_Input.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.RED));
+        if (address.isEmpty()) {
+            Delivery_Address_Input.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.RED));
+            JOptionPane.showMessageDialog(this, "Delivery address cannot be empty.",
+                "Missing Information", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-        // Show the error popup
-        javax.swing.JOptionPane.showMessageDialog(
-            this,
-            "Delivery address cannot be empty.",
-            "Missing Information",
-            javax.swing.JOptionPane.WARNING_MESSAGE
-        );
-        return; // stop here — don't save anything
-    }
+        Delivery_Address_Input.setBorder(javax.swing.UIManager.getBorder("TextField.border"));
 
-    // Field is valid — reset border to normal in case it was red before
-    Delivery_Address_Input.setBorder(javax.swing.UIManager.getBorder("TextField.border"));
+        // Extract the order ID from the header label, e.g. "Delivery Details - ORD - 1043"
+        int orderId;
+        try {
+            String[] parts = Delivery_Details_Plane_text.getText().split("-");
+            orderId = Integer.parseInt(parts[parts.length - 1].trim());
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Could not determine Order ID.",
+                "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-    // TODO: your actual save logic goes here, e.g.:
-    // saveDeliveryDetails(address);
-    javax.swing.JOptionPane.showMessageDialog(this, "Saved successfully!");
+        saveDeliveryAddress(this.orderId, address);
 
     }//GEN-LAST:event_Apply_SaveBtnActionPerformed
 
     private void Delivery_Address_InputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Delivery_Address_InputActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_Delivery_Address_InputActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        New_tier_rule form = new New_tier_rule(this);
+        form.setLocationRelativeTo(this);
+        form.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     
     /**
@@ -239,7 +307,7 @@ public class Discount_and_Delivery extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new Discount_and_Delivery().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new Discount_and_Delivery(13).setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -249,12 +317,11 @@ public class Discount_and_Delivery extends javax.swing.JFrame {
     private javax.swing.JLabel Delivery_Details_Plane_text;
     private javax.swing.JLabel Discount_and_Delivery_Plane_text;
     private javax.swing.JLabel Loyalty_Tiers_and_Delivery_Plane_text;
-    private javax.swing.JLabel jLabel17;
+    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }

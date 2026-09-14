@@ -1,19 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
-  <NonVisualComponents>
-    <Container class="javax.swing.JSplitPane" name="jSplitPane1">
-
-      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout"/>
-    </Container>
-    <Component class="javax.swing.JLabel" name="jLabel17">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jLabel17"/>
-      </Properties>
-    </Component>
-  </NonVisualComponents>
   <Properties>
-    <Property name="defaultCloseOperation" type="int" value="3"/>
+    <Property name="defaultCloseOperation" type="int" value="2"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
@@ -88,7 +77,7 @@
                       <Component id="jPanel3" min="-2" max="-2" attributes="0"/>
                       <Component id="jScrollPane1" min="-2" pref="90" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="227" max="32767" attributes="0"/>
+                  <EmptySpace pref="226" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -146,7 +135,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI" size="14" style="1"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Delivery Details - ORD - 1043"/>
+                <Property name="text" type="java.lang.String" value="Delivery Details "/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="Delivery_Address_Plane_Text">
@@ -188,22 +177,10 @@
             <Component class="javax.swing.JTable" name="jTable1">
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="4" rowCount="3">
-                    <Column editable="true" title="TIER" type="java.lang.String">
-                      <Data value="Bronz"/>
-                      <Data value="Silver"/>
-                      <Data value="Gold"/>
-                    </Column>
-                    <Column editable="true" title="POINT RANGE" type="java.lang.String">
-                      <Data value="0 - 499 pts"/>
-                      <Data value="500 -1499 pts"/>
-                      <Data value="1500 +"/>
-                    </Column>
-                    <Column editable="true" title="DISCOUNT" type="java.lang.String">
-                      <Data value="0%"/>
-                      <Data value="5%"/>
-                      <Data value="10%"/>
-                    </Column>
+                  <Table columnCount="4" rowCount="1">
+                    <Column editable="true" title="TIER" type="java.lang.String"/>
+                    <Column editable="true" title="POINT RANGE" type="java.lang.String"/>
+                    <Column editable="true" title="DISCOUNT" type="java.lang.String"/>
                     <Column editable="true" title="Edit / Delete" type="java.lang.Object"/>
                   </Table>
                 </Property>
@@ -252,15 +229,20 @@
                       <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
                       <Component id="Discount_and_Delivery_Plane_text" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
+                      <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="74" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
-                      <Component id="Discount_and_Delivery_Plane_text" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="34" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="jButton1" min="-2" pref="44" max="-2" attributes="0"/>
+                          <Component id="Discount_and_Delivery_Plane_text" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace pref="35" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -273,6 +255,14 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="DISCOUNT &amp; DELIVERY"/>
               </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="jButton1">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="+ New Tier Rule"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
