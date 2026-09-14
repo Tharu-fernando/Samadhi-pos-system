@@ -57,30 +57,43 @@ public class Create_user extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel1.setBackground(new java.awt.Color(246, 245, 242));
+
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setText("Samadhi Pooja Stores");
 
+        btnback.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnback.setText("<-- Back to sign in?");
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         jLabel2.setText("Create Staff Account");
 
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel3.setText("Full Name");
 
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel4.setText("UserName");
 
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel5.setText("Password");
 
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel6.setText("Confirm Password");
 
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel7.setText("Role");
 
+        btnCashier.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnCashier.setText("Cashier");
 
+        btnAdmin.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnAdmin.setText("Admin");
 
+        btnCreateAcc.setBackground(new java.awt.Color(11, 107, 109));
+        btnCreateAcc.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnCreateAcc.setForeground(new java.awt.Color(255, 255, 255));
         btnCreateAcc.setText("Create Account");
         btnCreateAcc.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -124,7 +137,7 @@ public class Create_user extends javax.swing.JFrame {
                                     .addComponent(txtconfirm, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
                                     .addComponent(btnAdmin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(187, 187, 187)
+                        .addGap(164, 164, 164)
                         .addComponent(btnCreateAcc)))
                 .addContainerGap(65, Short.MAX_VALUE))
         );
@@ -178,7 +191,7 @@ public class Create_user extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(81, 81, 81)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(97, Short.MAX_VALUE))
+                .addContainerGap(77, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

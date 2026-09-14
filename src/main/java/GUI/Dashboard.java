@@ -59,50 +59,59 @@ public class Dashboard extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(245, 243, 240));
         jPanel1.setPreferredSize(new java.awt.Dimension(1150, 700));
 
-        jPanel4.setBackground(new java.awt.Color(27, 58, 75));
+        jPanel4.setBackground(new java.awt.Color(11, 107, 109));
         jPanel4.setPreferredSize(new java.awt.Dimension(300, 700));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Samadhi Pooja Banda");
 
+        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jButton1.setText("Dashboard");
 
+        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jButton2.setLabel("Customers");
         jButton2.setMaximumSize(new java.awt.Dimension(88, 23));
         jButton2.setMinimumSize(new java.awt.Dimension(88, 23));
         jButton2.setPreferredSize(new java.awt.Dimension(88, 23));
 
+        jButton3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jButton3.setText("Supplier");
         jButton3.setMaximumSize(new java.awt.Dimension(88, 23));
         jButton3.setMinimumSize(new java.awt.Dimension(88, 23));
         jButton3.setPreferredSize(new java.awt.Dimension(88, 23));
 
+        jButton4.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jButton4.setText("Order");
         jButton4.setMaximumSize(new java.awt.Dimension(88, 23));
         jButton4.setMinimumSize(new java.awt.Dimension(88, 23));
         jButton4.setPreferredSize(new java.awt.Dimension(88, 23));
 
+        jButton5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jButton5.setText("Payment");
         jButton5.setMaximumSize(new java.awt.Dimension(88, 23));
         jButton5.setMinimumSize(new java.awt.Dimension(88, 23));
         jButton5.setPreferredSize(new java.awt.Dimension(88, 23));
 
+        jButton6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jButton6.setText("Discount & Delivery");
         jButton6.setMaximumSize(new java.awt.Dimension(88, 23));
         jButton6.setMinimumSize(new java.awt.Dimension(88, 23));
         jButton6.setPreferredSize(new java.awt.Dimension(88, 23));
 
+        jButton7.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jButton7.setText("Inventory & Products");
         jButton7.setMaximumSize(new java.awt.Dimension(88, 23));
         jButton7.setMinimumSize(new java.awt.Dimension(88, 23));
         jButton7.setPreferredSize(new java.awt.Dimension(88, 23));
 
+        jButton8.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton8.setText("Sign out");
         jButton8.setMaximumSize(new java.awt.Dimension(88, 23));
         jButton8.setMinimumSize(new java.awt.Dimension(88, 23));
         jButton8.setPreferredSize(new java.awt.Dimension(88, 23));
 
+        btnManageStaff.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         btnManageStaff.setText("Manage Staff");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
@@ -119,7 +128,7 @@ public class Dashboard extends javax.swing.JFrame {
                             .addGroup(jPanel4Layout.createSequentialGroup()
                                 .addGap(15, 15, 15)
                                 .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 21, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
