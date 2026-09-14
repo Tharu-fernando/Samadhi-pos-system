@@ -4,6 +4,11 @@
  */
 package GUI;
 
+import CODE.DBConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 /**
  *
  * @author senub
@@ -15,8 +20,15 @@ public class New_tier_rule extends javax.swing.JFrame {
     /**
      * Creates new form New_tier_rule
      */
+    private final Discount_and_Delivery parentFrame;
+
     public New_tier_rule() {
+        this(null);
+    }
+
+    public New_tier_rule(Discount_and_Delivery parentFrame) {
         initComponents();
+        this.parentFrame = parentFrame;
     }
 
     /**
@@ -42,7 +54,7 @@ public class New_tier_rule extends javax.swing.JFrame {
         Discount_Presentaage_Input = new javax.swing.JTextField();
         Save_RuleBtn = new javax.swing.JToggleButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(246, 245, 242));
 
@@ -87,7 +99,6 @@ public class New_tier_rule extends javax.swing.JFrame {
                     .addComponent(Tier_Name_Plane_text)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(Save_RuleBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 395, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(Discount_Presentaage_Plane_text, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(jPanel2Layout.createSequentialGroup()
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(Min_Points_Input, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -97,7 +108,8 @@ public class New_tier_rule extends javax.swing.JFrame {
                                 .addComponent(Max_Points_Input, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(Max_Points_Plane_text, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addComponent(Discount_Presentaage_Input)
-                        .addComponent(Tier_Name_Input))
+                        .addComponent(Tier_Name_Input)
+                        .addComponent(Discount_Presentaage_Plane_text))
                     .addComponent(New_Tier_Rule_Plane_text))
                 .addContainerGap(21, Short.MAX_VALUE))
         );
@@ -225,9 +237,42 @@ public class New_tier_rule extends javax.swing.JFrame {
         return;
     }
 
-    // 6. All valid — save the new tier rule here
-    // TODO: e.g. insert {tierName, minPoints, maxPoints, discount} into your tiers table/model
-    javax.swing.JOptionPane.showMessageDialog(this, "Tier rule saved successfully!");
+    // 6. All valid — insert into DB
+        if (insertTierRule(tierName, minPoints, maxPoints, discount)) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Tier rule saved successfully!");
+            if (parentFrame != null) {
+                parentFrame.loadLoyaltyTiers();
+            }
+            this.dispose();
+        }
+    }
+
+    // CREATE
+    private boolean insertTierRule(String tierName, int minPoints, int maxPoints, float discount) {
+        String sql = "INSERT INTO loyalty_tiers (tier_name, min_points, max_points, discount_percentage) "
+                   + "VALUES (?, ?, ?, ?)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, tierName);
+            ps.setInt(2, minPoints);
+            ps.setInt(3, maxPoints);
+            ps.setFloat(4, discount);
+            ps.executeUpdate();
+            return true;
+        } catch (SQLIntegrityConstraintViolationException e) {
+            showError("A tier named \"" + tierName + "\" already exists.");
+            return false;
+        } catch (SQLException e) {
+            showError("Database error: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private void clearForm() {
+        Tier_Name_Input.setText("");
+        Min_Points_Input.setText("");
+        Max_Points_Input.setText("");
+        Discount_Presentaage_Input.setText("");
 }
 
 private void showError(String message) {

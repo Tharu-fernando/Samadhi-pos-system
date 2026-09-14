@@ -16,15 +16,20 @@ public class Dashboard extends javax.swing.JFrame {
      */
     public Dashboard() {
         initComponents();
-        
+
         btnManageStaff.setVisible(Session.isAdmin());
         btnManageStaff.addActionListener(evt -> {
             new Create_user().setVisible(true);
         });
-        
+
         jButton8.addActionListener(evt -> signOut());
+
+        jButton2.addActionListener(evt -> new Customer_management().setVisible(true));
+        jButton3.addActionListener(evt -> new Supplierlist().setVisible(true));
+        jButton4.addActionListener(evt -> new POS_Billing().setVisible(true));
+        jButton7.addActionListener(evt -> new Inventory_and_product_management().setVisible(true));
     }
-    
+
     private void signOut() {
         Session.logout();
         new Logging().setVisible(true);
