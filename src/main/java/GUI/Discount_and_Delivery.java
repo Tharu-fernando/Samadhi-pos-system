@@ -110,7 +110,7 @@ public class Discount_and_Delivery extends javax.swing.JFrame {
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
         Delivery_Details_Plane_text.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        Delivery_Details_Plane_text.setText("Delivery Details - ORD - 1043");
+        Delivery_Details_Plane_text.setText("Delivery Details ");
 
         Delivery_Address_Plane_Text.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         Delivery_Address_Plane_Text.setText("Delivery Address");

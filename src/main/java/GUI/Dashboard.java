@@ -24,10 +24,18 @@ public class Dashboard extends javax.swing.JFrame {
 
         jButton8.addActionListener(evt -> signOut());
 
-        jButton2.addActionListener(evt -> new Customer_management().setVisible(true));
-        jButton3.addActionListener(evt -> new Supplierlist().setVisible(true));
-        jButton4.addActionListener(evt -> new POS_Billing().setVisible(true));
-        jButton7.addActionListener(evt -> new Inventory_and_product_management().setVisible(true));
+            jButton2.addActionListener(evt -> loadContent(new Customer_management()));
+            jButton3.addActionListener(evt -> loadContent(new Supplierlist()));
+            jButton4.addActionListener(evt -> loadContent(new POS_Billing()));
+            jButton7.addActionListener(evt -> loadContent(new Inventory_and_product_management()));
+    }
+    
+    private void loadContent(javax.swing.JFrame moduleFrame) {
+        jPanel2.removeAll();
+        jPanel2.setLayout(new java.awt.BorderLayout());
+        jPanel2.add(moduleFrame.getContentPane(), java.awt.BorderLayout.CENTER);
+        jPanel2.revalidate();
+        jPanel2.repaint();
     }
 
     private void signOut() {
@@ -133,7 +141,7 @@ public class Dashboard extends javax.swing.JFrame {
                             .addGroup(jPanel4Layout.createSequentialGroup()
                                 .addGap(15, 15, 15)
                                 .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(0, 21, Short.MAX_VALUE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -173,7 +181,7 @@ public class Dashboard extends javax.swing.JFrame {
                 .addGap(16, 16, 16))
         );
 
-        jPanel2.setPreferredSize(new java.awt.Dimension(1150, 700));
+        jPanel2.setPreferredSize(new java.awt.Dimension(1200, 700));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
