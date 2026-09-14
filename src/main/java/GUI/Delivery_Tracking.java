@@ -4,6 +4,13 @@
  */
 package GUI;
 
+import CODE.DBConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author senub
@@ -17,6 +24,57 @@ public class Delivery_Tracking extends javax.swing.JFrame {
      */
     public Delivery_Tracking() {
         initComponents();
+        loadDeliveries();
+    }
+    
+    private void loadDeliveries() {
+        String sql = "SELECT o.order_id, d.delivery_address, "
+                   + "GROUP_CONCAT(p.product_name SEPARATOR ', ') AS items, "
+                   + "d.delivery_status, d.delivery_date "
+                   + "FROM orders o "
+                   + "JOIN deliveries d ON d.order_id = o.order_id "
+                   + "JOIN order_items oi ON oi.order_id = o.order_id "
+                   + "JOIN products p ON p.product_id = oi.product_id "
+                   + "GROUP BY o.order_id";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            DefaultTableModel model = (DefaultTableModel) ORD_Tracking_Table.getModel();
+            model.setRowCount(0);
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    "#ORD-" + rs.getInt("order_id"),
+                    rs.getString("delivery_address"),
+                    rs.getString("items"),
+                    rs.getString("delivery_status"),
+                    rs.getDate("delivery_date") != null ? rs.getDate("delivery_date").toString() : "",
+                    null
+                });
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Failed to load deliveries: " + e.getMessage(),
+                "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // CREATE / UPDATE — saves the delivery address for an order (deliveries is 1:1 with orders)
+    private void saveDeliveryAddress(int orderId, String address) {
+        String sql = "INSERT INTO deliveries (order_id, delivery_address, delivery_status) "
+                   + "VALUES (?, ?, 'Pending') "
+                   + "ON DUPLICATE KEY UPDATE delivery_address = VALUES(delivery_address)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            ps.setString(2, address);
+            ps.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Saved successfully!");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Failed to save address: " + e.getMessage(),
+                "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -28,26 +86,23 @@ public class Delivery_Tracking extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane4 = new javax.swing.JScrollPane();
-        jTextArea3 = new javax.swing.JTextArea();
         jPanel1 = new javax.swing.JPanel();
         PendingBtn = new javax.swing.JButton();
         DispatchedBtn = new javax.swing.JButton();
         DeliveredBtn = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        Pending_TextArea = new javax.swing.JTextArea();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        Delivered_TextArea = new javax.swing.JTextArea();
-        jScrollPane5 = new javax.swing.JScrollPane();
-        Dispatched_TextArea = new javax.swing.JTextArea();
         jScrollPane1 = new javax.swing.JScrollPane();
         ORD_Tracking_Table = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         Delivery_Tracking_Plain_Text = new javax.swing.JLabel();
-
-        jTextArea3.setColumns(20);
-        jTextArea3.setRows(5);
-        jScrollPane4.setViewportView(jTextArea3);
+        jPanel3 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -63,34 +118,11 @@ public class Delivery_Tracking extends javax.swing.JFrame {
         DeliveredBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         DeliveredBtn.setText("Delivered");
 
-        Pending_TextArea.setColumns(20);
-        Pending_TextArea.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        Pending_TextArea.setRows(5);
-        Pending_TextArea.setText("Pending\n8");
-        jScrollPane2.setViewportView(Pending_TextArea);
-
-        Delivered_TextArea.setColumns(20);
-        Delivered_TextArea.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        Delivered_TextArea.setRows(5);
-        Delivered_TextArea.setText("Delivered\n34\n");
-        jScrollPane3.setViewportView(Delivered_TextArea);
-
-        Dispatched_TextArea.setColumns(20);
-        Dispatched_TextArea.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        Dispatched_TextArea.setRows(5);
-        Dispatched_TextArea.setText("Dispatched\n12");
-        jScrollPane5.setViewportView(Dispatched_TextArea);
-
         jScrollPane1.setBackground(new java.awt.Color(255, 255, 255));
 
         ORD_Tracking_Table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {"#ORD-8842", "42 Peradeniya Road Kandy", "Brass Oil Lamp", "Pending", "15 Oct 2024", null},
-                {"#ORD-8839", "108 Gall Road Colombo", "Sandalwood Incense", "Dispatched", "14 Oct 2024", null},
-                {"#ORD-8835", "Sri bodiraja Viharaya,Anuradapura", "Sandalwood Buddha Statue", "Delivered", "12 Oct 2024", null},
-                {"#ORD-8831", "15/4 Temple Road, Negambo", "Bodhi Leaf Clay Plates x50", "Pending", "11 Oct 2024", null},
-                {"#ORD-8828", "234 Matara Road, Galle", "White Brass Offering Bowl", "Dispatched", "10 Oct 2024", null},
-                {"#ORD-8824", "88 Kurunegala Hwy, Dambulla", "Prayer Beads (Sandalwood) x3", "Delivered", "08 Oct 2024", null}
+                {null, null, null, null, null, null}
             },
             new String [] {
                 "Order ID", "Delivery Address", "Items", "Status", "Delivery Date", "Action"
@@ -128,32 +160,121 @@ public class Delivery_Tracking extends javax.swing.JFrame {
                 .addContainerGap(38, Short.MAX_VALUE))
         );
 
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel1.setText("Pending");
+
+        jLabel2.setText("jLabel2");
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(17, 17, 17)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(17, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addContainerGap(127, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addComponent(jLabel1)
+                .addGap(28, 28, 28)
+                .addComponent(jLabel2)
+                .addContainerGap(34, Short.MAX_VALUE))
+        );
+
+        jPanel4.setBackground(new java.awt.Color(255, 255, 255));
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel3.setText("Dispatched");
+
+        jLabel4.setText("jLabel4");
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addContainerGap(19, Short.MAX_VALUE)
+                .addComponent(jLabel3)
+                .addContainerGap(121, Short.MAX_VALUE))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(15, 15, 15)
+                .addComponent(jLabel3)
+                .addGap(26, 26, 26)
+                .addComponent(jLabel4)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel5.setBackground(new java.awt.Color(255, 255, 255));
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel5.setText("Delivered");
+
+        jLabel6.setText("jLabel6");
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5))
+                .addContainerGap(129, Short.MAX_VALUE))
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addComponent(jLabel5)
+                .addGap(26, 26, 26)
+                .addComponent(jLabel6)
+                .addContainerGap(41, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addContainerGap()
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(19, 19, 19)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1160, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(PendingBtn)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(DispatchedBtn)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(DeliveredBtn))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(44, 44, 44)
-                                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(56, 56, 56)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(DeliveredBtn))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                        .addGap(37, 37, 37)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(81, 81, 81)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(81, 81, 81)
+                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(21, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -164,15 +285,15 @@ public class Delivery_Tracking extends javax.swing.JFrame {
                     .addComponent(PendingBtn)
                     .addComponent(DispatchedBtn)
                     .addComponent(DeliveredBtn))
-                .addGap(28, 28, 28)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
-                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
-                .addGap(36, 36, 36)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(235, Short.MAX_VALUE))
+                .addContainerGap(221, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -220,20 +341,21 @@ public class Delivery_Tracking extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton DeliveredBtn;
-    private javax.swing.JTextArea Delivered_TextArea;
     private javax.swing.JLabel Delivery_Tracking_Plain_Text;
     private javax.swing.JButton DispatchedBtn;
-    private javax.swing.JTextArea Dispatched_TextArea;
     private javax.swing.JTable ORD_Tracking_Table;
     private javax.swing.JButton PendingBtn;
-    private javax.swing.JTextArea Pending_TextArea;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JTextArea jTextArea3;
     // End of variables declaration//GEN-END:variables
 }
