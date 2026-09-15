@@ -176,7 +176,9 @@ public class POS_Billing extends javax.swing.JFrame {
         Searchbar.setText("Search temple items, incense, oil lamps, brassware, statues...");
         Searchbar.addActionListener(this::SearchbarActionPerformed);
 
+        jButton1.setBackground(new java.awt.Color(20, 92, 82));
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jButton1.setForeground(new java.awt.Color(255, 255, 255));
         jButton1.setText("Search");
         jButton1.addActionListener(this::jButton1ActionPerformed);
 
@@ -310,7 +312,9 @@ public class POS_Billing extends javax.swing.JFrame {
         TotalPrice.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         TotalPrice.setText("Total price");
 
+        CheckoutBtn.setBackground(new java.awt.Color(20, 92, 82));
         CheckoutBtn.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        CheckoutBtn.setForeground(new java.awt.Color(255, 255, 255));
         CheckoutBtn.setText("Go to Checkout");
         CheckoutBtn.addActionListener(this::CheckoutBtnActionPerformed);
 
@@ -370,14 +374,19 @@ public class POS_Billing extends javax.swing.JFrame {
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
 
+        jButton3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton3.setText("All Items");
 
+        jButton4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton4.setText("Incense");
 
+        jButton5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton5.setText("Oil Lamps");
 
+        jButton6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton6.setText("Statues");
 
+        jButton7.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton7.setText("Flower & Garlands");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
