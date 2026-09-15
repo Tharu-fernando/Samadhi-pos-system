@@ -8,6 +8,13 @@ package GUI;
 import CODE.OrderDAO;
 import java.math.BigDecimal;
 import javax.swing.JOptionPane;
+import CODE.DBConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 
 public class POS_Billing extends javax.swing.JFrame {
 
@@ -16,9 +23,11 @@ public class POS_Billing extends javax.swing.JFrame {
     private final java.util.List<OrderDAO.CartItem> cart = new java.util.ArrayList<>();
     private final OrderDAO orderDAO = new OrderDAO();
     private String currentCategory = null;
+    private Integer customerId;
     /**
      * Creates new form POS_Billing
      */
+
     public POS_Billing() {
         initComponents();
         productGridPanel.setLayout(new java.awt.GridLayout(0, 3, 20, 20));
@@ -29,6 +38,11 @@ public class POS_Billing extends javax.swing.JFrame {
         jButton5.addActionListener(evt -> { currentCategory = "Oil Lamps"; refreshGrid(); });
         jButton6.addActionListener(evt -> { currentCategory = "Statues"; refreshGrid(); });
         jButton7.addActionListener(evt -> { currentCategory = "Flowers & Garlands"; refreshGrid(); });
+    }
+
+    public POS_Billing(int customerId) {
+        this(); // kept for any caller that already knows the customer (e.g. Customer_management's picker)
+        this.customerId = customerId;
     }
 
     private void refreshGrid() {
@@ -113,11 +127,6 @@ public class POS_Billing extends javax.swing.JFrame {
         jLabel10 = new javax.swing.JLabel();
         jButton9 = new javax.swing.JButton();
         jButton10 = new javax.swing.JButton();
-        jPanel12 = new javax.swing.JPanel();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
-        jButton11 = new javax.swing.JButton();
-        jButton12 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         SumOfPrice = new javax.swing.JLabel();
@@ -135,7 +144,7 @@ public class POS_Billing extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         productGridPanel = new javax.swing.JPanel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(245, 243, 240));
 
@@ -210,7 +219,7 @@ public class POS_Billing extends javax.swing.JFrame {
                 .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel9)
                     .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 106, Short.MAX_VALUE)
                 .addComponent(jButton9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton10)
@@ -230,56 +239,13 @@ public class POS_Billing extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jPanel12.setBackground(new java.awt.Color(255, 255, 255));
-
-        jLabel11.setText("Item name");
-
-        jLabel12.setText("Price");
-
-        jButton11.setText("+");
-        jButton11.addActionListener(this::jButton11ActionPerformed);
-
-        jButton12.setText("-");
-        jButton12.addActionListener(this::jButton12ActionPerformed);
-
-        javax.swing.GroupLayout jPanel12Layout = new javax.swing.GroupLayout(jPanel12);
-        jPanel12.setLayout(jPanel12Layout);
-        jPanel12Layout.setHorizontalGroup(
-            jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel12Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel11)
-                    .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 106, Short.MAX_VALUE)
-                .addComponent(jButton11)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton12)
-                .addGap(30, 30, 30))
-        );
-        jPanel12Layout.setVerticalGroup(
-            jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel12Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel12Layout.createSequentialGroup()
-                        .addComponent(jLabel11)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel12))
-                    .addComponent(jButton12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-
         javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
         jPanel10.setLayout(jPanel10Layout);
         jPanel10Layout.setHorizontalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel10Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel10Layout.setVerticalGroup(
@@ -287,9 +253,7 @@ public class POS_Billing extends javax.swing.JFrame {
             .addGroup(jPanel10Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(219, Short.MAX_VALUE))
+                .addContainerGap(281, Short.MAX_VALUE))
         );
 
         SelectedItemPanel.setViewportView(jPanel10);
@@ -419,17 +383,20 @@ public class POS_Billing extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
         productGridPanel.setBackground(new java.awt.Color(255, 255, 255));
 
         javax.swing.GroupLayout productGridPanelLayout = new javax.swing.GroupLayout(productGridPanel);
         productGridPanel.setLayout(productGridPanelLayout);
         productGridPanelLayout.setHorizontalGroup(
             productGridPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
+            .addGap(0, 771, Short.MAX_VALUE)
         );
         productGridPanelLayout.setVerticalGroup(
             productGridPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
+            .addGap(0, 450, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
@@ -437,16 +404,15 @@ public class POS_Billing extends javax.swing.JFrame {
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(59, 59, 59)
-                .addComponent(productGridPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(618, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(productGridPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(36, 36, 36)
-                .addComponent(productGridPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(326, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(productGridPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         jScrollPane1.setViewportView(jPanel5);
@@ -465,7 +431,7 @@ public class POS_Billing extends javax.swing.JFrame {
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18))
         );
@@ -520,11 +486,84 @@ public class POS_Billing extends javax.swing.JFrame {
                 "Empty Cart", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        OrderReview review = new OrderReview(cart);
+
+        if (customerId == null) {
+            Integer resolvedId = resolveCustomerByPhone();
+            if (resolvedId == null) {
+                return; // cashier cancelled the phone lookup/creation
+            }
+            customerId = resolvedId;
+        }
+
+        OrderReview review = new OrderReview(cart, customerId);
         review.setLocationRelativeTo(this);
         review.setVisible(true);
     }//GEN-LAST:event_CheckoutBtnActionPerformed
 
+    private Integer resolveCustomerByPhone() {
+        String phone = JOptionPane.showInputDialog(this,
+            "Enter customer's phone number:", "Customer Lookup", JOptionPane.PLAIN_MESSAGE);
+
+        if (phone == null) {
+            return null; // cashier cancelled
+        }
+        phone = phone.trim();
+        if (phone.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Phone number cannot be empty.",
+                "Missing Information", JOptionPane.WARNING_MESSAGE);
+            return null;
+        }
+
+        String findSql = "SELECT customer_id FROM customers WHERE phone_number = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(findSql)) {
+            ps.setString(1, phone);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("customer_id");
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Failed to look up customer by phone", e);
+            JOptionPane.showMessageDialog(this, "Failed to look up customer: " + e.getMessage(),
+                "Database Error", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        int confirmCreate = JOptionPane.showConfirmDialog(this,
+            "No customer found with phone " + phone + ". Create a new customer?",
+            "New Customer", JOptionPane.YES_NO_OPTION);
+        if (confirmCreate != JOptionPane.YES_OPTION) {
+            return null;
+        }
+
+        String name = JOptionPane.showInputDialog(this,
+            "Customer's name (optional):", "New Customer", JOptionPane.PLAIN_MESSAGE);
+
+        String insertSql = "INSERT INTO customers (phone_number, full_name) VALUES (?, ?)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, phone);
+            if (name == null || name.trim().isEmpty()) {
+                ps.setNull(2, Types.VARCHAR);
+            } else {
+                ps.setString(2, name.trim());
+            }
+            ps.executeUpdate();
+
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                if (keys.next()) {
+                    return keys.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Failed to create new customer", e);
+            JOptionPane.showMessageDialog(this, "Failed to create customer: " + e.getMessage(),
+                "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return null;
+    }    
+    
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -536,14 +575,6 @@ public class POS_Billing extends javax.swing.JFrame {
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton10ActionPerformed
-
-    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton11ActionPerformed
-
-    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton12ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -579,8 +610,6 @@ public class POS_Billing extends javax.swing.JFrame {
     private javax.swing.JLabel TotalPrice;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
-    private javax.swing.JButton jButton11;
-    private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
@@ -590,8 +619,6 @@ public class POS_Billing extends javax.swing.JFrame {
     private javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -600,7 +627,6 @@ public class POS_Billing extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
-    private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
