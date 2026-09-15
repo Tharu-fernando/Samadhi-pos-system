@@ -25,6 +25,7 @@ public class Dashboard extends javax.swing.JFrame {
             jButton2.addActionListener(evt -> loadContent(new Customer_management()));
             jButton3.addActionListener(evt -> loadContent(new Supplierlist()));
             jButton4.addActionListener(evt -> loadContent(new POS_Billing()));
+            jButton6.addActionListener(evt -> loadContent(new Discount_and_Delivery()));
             jButton7.addActionListener(evt -> loadContent(new Inventory_and_product_management()));
     }
     
