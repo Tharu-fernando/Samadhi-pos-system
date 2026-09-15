@@ -36,7 +36,7 @@ public class ManageStaff extends javax.swing.JFrame {
     public void loadUsers() {
         javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) Usertable.getModel();
         model.setRowCount(0);
-
+//READ
         String sql = "SELECT user_id, full_name, username, role, status, created_at "
                    + "FROM users ORDER BY created_at DESC";
 

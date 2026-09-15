@@ -215,8 +215,8 @@ public class Create_user extends javax.swing.JFrame {
         char[] confirmChars = txtconfirm.getPassword();
         String password = new String(passwordChars).trim();
         String confirm = new String(confirmChars).trim();
+//error Exception
 
-        // --- Validation only, no DB yet ---
         if (fullName.isEmpty()) {
             JOptionPane.showMessageDialog(this,
                 "Full name cannot be empty.", "Validation Error",
@@ -274,7 +274,7 @@ public class Create_user extends javax.swing.JFrame {
         
         
         String hashedPassword = PasswordUtil.hash(passwordChars);
-
+//CREATE
         String sql = "INSERT INTO users (username, password_hash, full_name, role, created_by) "
                    + "VALUES (?, ?, ?, ?, ?)";
 
@@ -285,27 +285,14 @@ public class Create_user extends javax.swing.JFrame {
             pstmt.setString(2, hashedPassword);
             pstmt.setString(3, fullName);
             pstmt.setString(4, selectedRole);
-
-            int currentUserId = Session.getCurrentUserId();
-            if (currentUserId > 0) {
-                pstmt.setInt(5, currentUserId);
-            } else {
-                pstmt.setNull(5, java.sql.Types.INTEGER); // bootstrap case: no admin logged in yet
-            }
+            pstmt.setInt(5, Session.getCurrentUserId());
 
             pstmt.executeUpdate();
 
         } catch (SQLIntegrityConstraintViolationException e) {
-            String msg = e.getMessage() == null ? "" : e.getMessage().toLowerCase();
-            if (msg.contains("username")) {
-                JOptionPane.showMessageDialog(this,
-                    "That username is already taken.", "Duplicate Username",
-                    JOptionPane.WARNING_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(this,
-                    "Could not create account: " + e.getMessage(), "Database Constraint Error",
-                    JOptionPane.ERROR_MESSAGE);
-            }
+            JOptionPane.showMessageDialog(this,
+                "That username is already taken.", "Duplicate Username",
+                JOptionPane.WARNING_MESSAGE);
             return;
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this,

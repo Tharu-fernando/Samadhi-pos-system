@@ -45,7 +45,7 @@ public class Logging extends javax.swing.JFrame {
                 "Missing Information", JOptionPane.WARNING_MESSAGE);
             return;
         }
-
+//READ
         String sql = "SELECT user_id, password_hash, role, status FROM users WHERE username = ?";
 
         try (Connection conn = DBConnection.getConnection();

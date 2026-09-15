@@ -447,7 +447,7 @@ public class OrderReview extends javax.swing.JFrame {
 
         String customerFullName = "-";
         java.math.BigDecimal discountPercentage = java.math.BigDecimal.ZERO;
-
+//READ
         String sql = "SELECT c.full_name, c.loyalty_points, t.discount_percentage "
                    + "FROM customers c "
                    + "LEFT JOIN loyalty_tiers t "
