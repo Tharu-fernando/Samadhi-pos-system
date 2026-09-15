@@ -4,6 +4,15 @@
  */
 package GUI;
 
+import CODE.DBConnection;
+import CODE.PasswordUtil;
+import CODE.Session;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author tharu
@@ -18,6 +27,67 @@ public class Logging extends javax.swing.JFrame {
         
         btnCreate.setVisible(false);
         jLabel6.setVisible(false);
+
+        btnSignin.addActionListener(evt -> handleSignIn());
+    }
+
+    private void handleSignIn() {
+        String username = lblUsername.getText().trim();
+        char[] passwordChars = lblPassword.getPassword();
+
+        if (username.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter your username.",
+                "Missing Information", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (passwordChars.length == 0) {
+            JOptionPane.showMessageDialog(this, "Please enter your password.",
+                "Missing Information", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String sql = "SELECT user_id, password_hash, role, status FROM users WHERE username = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    JOptionPane.showMessageDialog(this, "Invalid username or password.",
+                        "Sign In Failed", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String storedHash = rs.getString("password_hash");
+                String status = rs.getString("status");
+                int userId = rs.getInt("user_id");
+                String role = rs.getString("role");
+
+                String enteredHash = PasswordUtil.hash(passwordChars);
+
+                if (!storedHash.equals(enteredHash)) {
+                    JOptionPane.showMessageDialog(this, "Invalid username or password.",
+                        "Sign In Failed", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (!"Active".equals(status)) {
+                    JOptionPane.showMessageDialog(this, "This account is inactive. Contact an administrator.",
+                        "Account Inactive", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                Session.login(userId, username, role);
+                new Dashboard().setVisible(true);
+                this.dispose();
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Database error: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            java.util.Arrays.fill(passwordChars, '0');
+        }
     }
 
     /**
@@ -187,11 +257,11 @@ public class Logging extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void lblUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lblUsernameActionPerformed
-        // TODO add your handling code here:
+        handleSignIn();
     }//GEN-LAST:event_lblUsernameActionPerformed
 
     private void lblPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lblPasswordActionPerformed
-        // TODO add your handling code here:
+        handleSignIn();
     }//GEN-LAST:event_lblPasswordActionPerformed
 
      private void openCreateAccount() {

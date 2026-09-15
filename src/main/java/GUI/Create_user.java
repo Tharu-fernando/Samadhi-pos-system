@@ -55,7 +55,7 @@ public class Create_user extends javax.swing.JFrame {
         btnCreateAcc = new javax.swing.JButton();
         txtpassword = new javax.swing.JPasswordField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(246, 245, 242));
 
@@ -285,14 +285,27 @@ public class Create_user extends javax.swing.JFrame {
             pstmt.setString(2, hashedPassword);
             pstmt.setString(3, fullName);
             pstmt.setString(4, selectedRole);
-            pstmt.setInt(5, Session.getCurrentUserId());
+
+            int currentUserId = Session.getCurrentUserId();
+            if (currentUserId > 0) {
+                pstmt.setInt(5, currentUserId);
+            } else {
+                pstmt.setNull(5, java.sql.Types.INTEGER); // bootstrap case: no admin logged in yet
+            }
 
             pstmt.executeUpdate();
 
         } catch (SQLIntegrityConstraintViolationException e) {
-            JOptionPane.showMessageDialog(this,
-                "That username is already taken.", "Duplicate Username",
-                JOptionPane.WARNING_MESSAGE);
+            String msg = e.getMessage() == null ? "" : e.getMessage().toLowerCase();
+            if (msg.contains("username")) {
+                JOptionPane.showMessageDialog(this,
+                    "That username is already taken.", "Duplicate Username",
+                    JOptionPane.WARNING_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                    "Could not create account: " + e.getMessage(), "Database Constraint Error",
+                    JOptionPane.ERROR_MESSAGE);
+            }
             return;
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this,
@@ -301,16 +314,16 @@ public class Create_user extends javax.swing.JFrame {
             return;
         }
 
-        // --- Placeholder success (no DB save yet) ---
         JOptionPane.showMessageDialog(this,
-            "Account details captured (not yet saved to database):\n"
+            "Staff account created successfully:\n"
             + "Name: " + fullName + "\n"
             + "Username: " + username + "\n"
             + "Role: " + selectedRole,
-            "Preview", JOptionPane.INFORMATION_MESSAGE);
+            "Account Created", JOptionPane.INFORMATION_MESSAGE);
 
         java.util.Arrays.fill(passwordChars, '0');
         java.util.Arrays.fill(confirmChars, '0');
+        this.dispose();
     }//GEN-LAST:event_btnCreateAccActionPerformed
     private void backToSignIn() {
         new Logging().setVisible(true);
