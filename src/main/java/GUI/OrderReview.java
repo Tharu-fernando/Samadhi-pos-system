@@ -7,6 +7,12 @@ package GUI;
 import CODE.OrderDAO;
 import java.math.BigDecimal;
 import javax.swing.JOptionPane;
+import CODE.DBConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.math.RoundingMode;
 /**
  *
  * @author User
@@ -18,16 +24,23 @@ public class OrderReview extends javax.swing.JFrame {
     private final java.util.List<CODE.OrderDAO.CartItem> cart;
     private final CODE.OrderDAO orderDAO = new CODE.OrderDAO();
     private java.math.BigDecimal computedSubtotal = java.math.BigDecimal.ZERO;
+    private final int customerId;
+    private java.math.BigDecimal computedLoyaltyDiscount = java.math.BigDecimal.ZERO;
     /**
      * Creates new form OrderReview
      */
     public OrderReview() {
-        this(new java.util.ArrayList<>());
+        this(new java.util.ArrayList<>(), 1); // fallback for NetBeans Design view / no-arg testing — not for real use
     }
 
     public OrderReview(java.util.List<CODE.OrderDAO.CartItem> cart) {
+        this(cart, 1); // TODO: remove once the calling screen passes the real customerId
+    }
+
+    public OrderReview(java.util.List<CODE.OrderDAO.CartItem> cart, int customerId) {
         initComponents();
         this.cart = cart;
+        this.customerId = customerId;
         populateOrderReview();
     }
 
@@ -387,12 +400,11 @@ public class OrderReview extends javax.swing.JFrame {
                 return;
             }
 
-            // TODO: replace hardcoded IDs once customer lookup and Session.currentUserId are wired here
-            int customerId = 1;
+            // TODO: replace hardcoded currentUserId once Session.currentUserId is wired here
             int currentUserId = 8;
 
             int orderId = orderDAO.createOrder(customerId, currentUserId, cart,
-                    java.math.BigDecimal.ZERO, selectedFulfillmentMode);
+                    computedLoyaltyDiscount, selectedFulfillmentMode);
 
             if (orderId == -1) {
                 javax.swing.JOptionPane.showMessageDialog(this,
@@ -433,15 +445,50 @@ public class OrderReview extends javax.swing.JFrame {
             computedSubtotal = computedSubtotal.add(item.lineTotal());
         }
 
-        // TODO: replace with real loyalty-tier lookup once loyalty_tiers is wired
-        java.math.BigDecimal loyaltyDiscount = java.math.BigDecimal.ZERO;
+        String customerFullName = "-";
+        java.math.BigDecimal discountPercentage = java.math.BigDecimal.ZERO;
+
+        String sql = "SELECT c.full_name, c.loyalty_points, t.discount_percentage "
+                   + "FROM customers c "
+                   + "LEFT JOIN loyalty_tiers t "
+                   + "  ON c.loyalty_points >= t.min_points "
+                   + "  AND (t.max_points IS NULL OR c.loyalty_points <= t.max_points) "
+                   + "WHERE c.customer_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, customerId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    String name = rs.getString("full_name");
+                    customerFullName = (name == null || name.isEmpty()) ? "-" : name;
+                    java.math.BigDecimal pct = rs.getBigDecimal("discount_percentage");
+                    if (pct != null) {
+                        discountPercentage = pct;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Failed to load customer/loyalty data", e);
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Failed to load customer details: " + e.getMessage(),
+                "Database Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+
+        CustomerName.setText(customerFullName);
+        LoyaltyDiscountLable.setText("Loyalty discount applied: " + discountPercentage + "%");
+
+        computedLoyaltyDiscount = computedSubtotal
+                .multiply(discountPercentage)
+                .divide(java.math.BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+
         // TODO: replace with real delivery fee once Delivery module logic is wired
         java.math.BigDecimal deliveryFee = java.math.BigDecimal.ZERO;
 
-        java.math.BigDecimal total = computedSubtotal.subtract(loyaltyDiscount).add(deliveryFee);
+        java.math.BigDecimal total = computedSubtotal.subtract(computedLoyaltyDiscount).add(deliveryFee);
 
         Subtotal.setText(String.format("Rs. %.2f", computedSubtotal));
-        LoyaltyDiscount.setText(String.format("Rs. %.2f", loyaltyDiscount));
+        LoyaltyDiscount.setText(String.format("Rs. %.2f", computedLoyaltyDiscount));
         DeliveryFee.setText(String.format("Rs. %.2f", deliveryFee));
         TotalAmount.setText(String.format("Rs. %.2f", total));
     }
