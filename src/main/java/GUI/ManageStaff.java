@@ -4,6 +4,12 @@
  */
 package GUI;
 
+import CODE.DBConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
 /**
  *
  * @author User
@@ -17,6 +23,44 @@ public class ManageStaff extends javax.swing.JFrame {
      */
     public ManageStaff() {
         initComponents();
+        CreateAccountBtn.addActionListener(evt -> openCreateAccount());
+        loadUsers();
+    }
+
+    private void openCreateAccount() {
+        Create_user dialog = new Create_user();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
+    public void loadUsers() {
+        javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) Usertable.getModel();
+        model.setRowCount(0);
+
+        String sql = "SELECT user_id, full_name, username, role, status, created_at "
+                   + "FROM users ORDER BY created_at DESC";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                String createdDate = rs.getTimestamp("created_at").toLocalDateTime().toLocalDate().toString();
+                model.addRow(new Object[]{
+                    String.valueOf(rs.getInt("user_id")),
+                    rs.getString("full_name"),
+                    rs.getString("username"),
+                    rs.getString("role"),
+                    createdDate,
+                    rs.getString("status"),
+                    ""
+                });
+            }
+        } catch (SQLException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Failed to load staff list", e);
+            JOptionPane.showMessageDialog(this, "Failed to load staff: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -36,7 +80,7 @@ public class ManageStaff extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         Usertable = new javax.swing.JTable();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(244, 246, 245));
 

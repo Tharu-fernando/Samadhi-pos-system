@@ -18,9 +18,7 @@ public class Dashboard extends javax.swing.JFrame {
         initComponents();
 
         btnManageStaff.setVisible(Session.isAdmin());
-        btnManageStaff.addActionListener(evt -> {
-            new Create_user().setVisible(true);
-        });
+        btnManageStaff.addActionListener(evt -> loadContent(new ManageStaff()));
 
         jButton8.addActionListener(evt -> signOut());
 
@@ -126,6 +124,11 @@ public class Dashboard extends javax.swing.JFrame {
 
         btnManageStaff.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         btnManageStaff.setText("Manage Staff");
+        btnManageStaff.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnManageStaffActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -141,7 +144,7 @@ public class Dashboard extends javax.swing.JFrame {
                             .addGroup(jPanel4Layout.createSequentialGroup()
                                 .addGap(15, 15, 15)
                                 .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 18, Short.MAX_VALUE))
+                        .addGap(0, 21, Short.MAX_VALUE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -224,6 +227,10 @@ public class Dashboard extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnManageStaffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageStaffActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnManageStaffActionPerformed
 
     /**
      * @param args the command line arguments

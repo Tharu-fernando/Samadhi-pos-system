@@ -453,7 +453,9 @@ public class OrderReview extends javax.swing.JFrame {
                    + "LEFT JOIN loyalty_tiers t "
                    + "  ON c.loyalty_points >= t.min_points "
                    + "  AND (t.max_points IS NULL OR c.loyalty_points <= t.max_points) "
-                   + "WHERE c.customer_id = ?";
+                   + "WHERE c.customer_id = ? "
+                   + "ORDER BY t.min_points DESC "
+                   + "LIMIT 1";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
