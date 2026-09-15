@@ -164,7 +164,9 @@ public class ReceiptInvoicePrintout extends javax.swing.JFrame {
 
         PaidinfullLabel.setText("Paid in full");
 
+        jButton1.setBackground(new java.awt.Color(20, 92, 82));
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jButton1.setForeground(new java.awt.Color(255, 255, 255));
         jButton1.setText("Print receipt");
         jButton1.addActionListener(this::jButton1ActionPerformed);
 
