@@ -40,7 +40,7 @@ public class Inventory_and_product_management extends javax.swing.JFrame {
         }));
         loadProducts();
     }
-    
+ //READ   
     public void loadProducts() {
         javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);

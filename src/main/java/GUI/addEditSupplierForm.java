@@ -342,7 +342,7 @@ public class addEditSupplierForm extends javax.swing.JFrame {
             jTextField4.requestFocus();
             return;
         }
-
+//CREATE
         String sql = "INSERT INTO suppliers (supplier_name, contact_person, phone_number, address, status) "
                    + "VALUES (?, ?, ?, ?, 'Active')";
 
