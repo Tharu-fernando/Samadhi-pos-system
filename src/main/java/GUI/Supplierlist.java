@@ -56,7 +56,7 @@ public class Supplierlist extends javax.swing.JFrame {
             public void changedUpdate(javax.swing.event.DocumentEvent e) { filterTable(); }
         });
     }
-
+//READ
     public void loadSuppliers() {
         javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
