@@ -7,6 +7,11 @@ package GUI;
 import CODE.PaymentDAO;
 import java.math.BigDecimal;
 import javax.swing.JOptionPane;
+import CODE.DBConnection;
+import java.math.RoundingMode;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  *
@@ -27,7 +32,19 @@ public class PayementScreen extends javax.swing.JFrame {
     public PayementScreen() {
         initComponents();
         restrictToDigits(AmountTenderedText);//AmountTenderedText
+
+        // Recalculate change every time the amount tendered changes
+        AmountTenderedText.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) { updateChangeDue(); }
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) { updateChangeDue(); }
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) { updateChangeDue(); }
+        });
+
         ConfirmBtn.addActionListener(this::ConfirmBtnActionPerformed);
+        setCashPaymentMode(true); // Cash selected by default, change starts at Rs. 0.00
     }
 
     /**
@@ -322,7 +339,7 @@ public class PayementScreen extends javax.swing.JFrame {
     } else {
         AmountTenderedText.setBackground(java.awt.Color.WHITE);
         ChangeDueLable.setText("Change Due");
-        jLabel3.setText("Change");
+        updateChangeDue();
     }
 
     CashPaymentBtn.setBackground(isCash ? new java.awt.Color(11, 107, 109) : null);
@@ -330,6 +347,30 @@ public class PayementScreen extends javax.swing.JFrame {
     CardTerminalBtn.setBackground(isCash ? null : new java.awt.Color(11, 107, 109));
     CardTerminalBtn.setForeground(isCash ? java.awt.Color.BLACK : java.awt.Color.WHITE);
 }
+
+    // Shows the change live while the cashier types the amount tendered
+    private void updateChangeDue() {
+        if (!isCashSelected) {
+            return; // card payments have no change
+        }
+
+        String text = AmountTenderedText.getText().trim();
+        if (text.isEmpty()) {
+            jLabel3.setText("Rs. 0.00");
+            return;
+        }
+
+        try {
+            BigDecimal tendered = new BigDecimal(text);
+            BigDecimal change = tendered.subtract(totalAmount);
+            if (change.compareTo(BigDecimal.ZERO) < 0) {
+                change = BigDecimal.ZERO; // not enough money given yet
+            }
+            jLabel3.setText("Rs. " + String.format("%,.2f", change));
+        } catch (NumberFormatException e) {
+            jLabel3.setText("Rs. 0.00");
+        }
+    }
     
     private void ConfirmBtnActionPerformed(java.awt.event.ActionEvent evt) {
         if (orderId == -1) {
@@ -372,9 +413,36 @@ public class PayementScreen extends javax.swing.JFrame {
                     "Database Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
+        
+        awardLoyaltyPoints();
+        
         new ReceiptInvoicePrintout(orderId).setVisible(true);
         this.dispose();
+    }
+    
+    // Award 1 loyalty point for every Rs. 100 of the final total
+    private void awardLoyaltyPoints() {
+        // e.g. Rs. 1,250 -> 12 points, Rs. 99 -> 0 points (always rounds down)
+        int points = totalAmount.divide(BigDecimal.valueOf(100), 0, RoundingMode.DOWN).intValue();
+        if (points <= 0) {
+            return;
+        }
+
+        String sql = "UPDATE customers SET loyalty_points = loyalty_points + ? "
+                   + "WHERE customer_id = (SELECT customer_id FROM orders WHERE order_id = ?)";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, points);
+            ps.setInt(2, orderId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            logger.log(java.util.logging.Level.WARNING,
+                    "Payment saved but loyalty points not added for order " + orderId, e);
+            JOptionPane.showMessageDialog(this,
+                    "Payment saved, but loyalty points could not be added: " + e.getMessage(),
+                    "Loyalty Points", JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     /**

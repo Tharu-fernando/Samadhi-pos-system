@@ -31,6 +31,10 @@ public class POS_Billing extends javax.swing.JFrame {
     public POS_Billing() {
         initComponents();
         productGridPanel.setLayout(new java.awt.GridLayout(0, 3, 20, 20));
+        // Current Order panel: stack the cart rows from top to bottom
+        jPanel10.setLayout(new javax.swing.BoxLayout(jPanel10, javax.swing.BoxLayout.Y_AXIS));
+        jPanel10.setBackground(java.awt.Color.WHITE);
+        refreshCartPanel();
         loadProductGrid(null, null);
 
         jButton3.addActionListener(evt -> { currentCategory = null; refreshGrid(); });
@@ -91,18 +95,113 @@ public class POS_Billing extends javax.swing.JFrame {
     }
 
     private void addProductToCart(OrderDAO.ProductRow product) {
-        OrderDAO.CartItem item = new OrderDAO.CartItem();
-        item.productId = product.productId;
-        item.productName = product.productName;
-        item.unitPrice = product.unitPrice;
-        item.quantity = 1;
-        cart.add(item);
+        for (OrderDAO.CartItem existing : cart) {
+                    if (java.util.Objects.equals(existing.productId, product.productId)) {
+                        existing.quantity++;
+                        refreshCartPanel();
+                        return;
+                    }
+                }
 
-        JOptionPane.showMessageDialog(this,
-            product.productName + " added to cart.",
-            "Added", JOptionPane.INFORMATION_MESSAGE);
+                OrderDAO.CartItem item = new OrderDAO.CartItem();
+                item.productId = product.productId;
+                item.productName = product.productName;
+                item.unitPrice = product.unitPrice;
+                item.quantity = 1;
+                cart.add(item);
+                refreshCartPanel();
     }
     
+    // Rebuild the "Current Order" list and the Subtotal / Discount / Total labels
+    private void refreshCartPanel() {
+        jPanel10.removeAll();
+
+        if (cart.isEmpty()) {
+            javax.swing.JLabel emptyLabel = new javax.swing.JLabel("No items added yet");
+            emptyLabel.setForeground(java.awt.Color.GRAY);
+            emptyLabel.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
+            jPanel10.add(javax.swing.Box.createVerticalStrut(20));
+            jPanel10.add(emptyLabel);
+        }
+
+        BigDecimal subtotal = BigDecimal.ZERO;
+        for (OrderDAO.CartItem item : cart) {
+            jPanel10.add(createCartRow(item));
+            subtotal = subtotal.add(item.lineTotal());
+        }
+        jPanel10.add(javax.swing.Box.createVerticalGlue()); // keeps the rows at the top
+
+        jPanel10.revalidate();
+        jPanel10.repaint();
+
+        SumOfPrice.setText(String.format("Rs. %.2f", subtotal));
+        DiscountPrice.setText("At checkout"); // loyalty discount is applied on Order Review
+        TotalPrice.setText(String.format("Rs. %.2f", subtotal));
+    }
+
+    // One row in Current Order: name + (qty x price) on the left, + and - buttons on the right
+    private javax.swing.JPanel createCartRow(OrderDAO.CartItem item) {
+        javax.swing.JPanel row = new javax.swing.JPanel(new java.awt.BorderLayout(8, 0));
+        row.setBackground(java.awt.Color.WHITE);
+        row.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(230, 230, 230)),
+                javax.swing.BorderFactory.createEmptyBorder(8, 8, 8, 8)));
+
+        // Left side: item name on top, "qty x price" below
+        javax.swing.JLabel nameLabel = new javax.swing.JLabel(item.productName);
+        nameLabel.setToolTipText(item.productName); // full name on hover if it's cut off
+        javax.swing.JLabel priceLabel = new javax.swing.JLabel(
+                item.quantity + " x " + String.format("Rs. %.2f", item.unitPrice));
+
+        javax.swing.JPanel textPanel = new javax.swing.JPanel(new java.awt.GridLayout(2, 1));
+        textPanel.setOpaque(false);
+        textPanel.add(nameLabel);
+        textPanel.add(priceLabel);
+        textPanel.setPreferredSize(new java.awt.Dimension(120, textPanel.getPreferredSize().height));
+
+        // Right side: + and - buttons
+        javax.swing.JButton plusBtn = new javax.swing.JButton("+");
+        javax.swing.JButton minusBtn = new javax.swing.JButton("-");
+        plusBtn.setPreferredSize(new java.awt.Dimension(42, 28));
+        minusBtn.setPreferredSize(new java.awt.Dimension(42, 28));
+        plusBtn.addActionListener(evt -> changeQuantity(item, 1));
+        minusBtn.addActionListener(evt -> changeQuantity(item, -1));
+
+        javax.swing.JPanel buttonPanel = new javax.swing.JPanel(
+                new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 4, 2));
+        buttonPanel.setOpaque(false);
+        buttonPanel.add(plusBtn);
+        buttonPanel.add(minusBtn);
+
+        row.add(textPanel, java.awt.BorderLayout.CENTER);
+        row.add(buttonPanel, java.awt.BorderLayout.EAST);
+
+        // Stop the row from stretching taller than it needs to
+        row.setMaximumSize(new java.awt.Dimension(Integer.MAX_VALUE, row.getPreferredSize().height));
+        return row;
+    }
+
+    // + adds 1, - removes 1. If quantity reaches 0, the item is removed from the order.
+    private void changeQuantity(OrderDAO.CartItem item, int change) {
+        item.quantity += change;
+        if (item.quantity <= 0) {
+            cart.remove(item);
+        }
+        refreshCartPanel();
+    }    
+    
+    // Called by Order Review's "Edit Order" button.
+    // The Dashboard shows Billing inside its own window, so we bring forward
+    // the window that is really showing it, not this empty POS_Billing frame.
+    public void returnToBilling() {
+        java.awt.Window shownIn = javax.swing.SwingUtilities.getWindowAncestor(jPanel1);
+        if (shownIn != null) {
+            shownIn.toFront();
+            shownIn.requestFocus();
+        }
+        jPanel1.revalidate();
+        jPanel1.repaint();
+    }    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -496,6 +595,7 @@ public class POS_Billing extends javax.swing.JFrame {
         }
 
         OrderReview review = new OrderReview(cart, customerId);
+        review.setBillingWindow(this);
         review.setLocationRelativeTo(this);
         review.setVisible(true);
     }//GEN-LAST:event_CheckoutBtnActionPerformed
