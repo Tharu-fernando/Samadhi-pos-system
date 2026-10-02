@@ -46,15 +46,20 @@ public class Customer_management extends javax.swing.JFrame {
         jTable1.getColumn("Action").setCellEditor(new CustomerActionEditor(new CustomerActionEditor.CustomerActions() {
             @Override
             public void onEdit(int modelRow) {
-                // TODO: open New_customer dialog pre-filled with this row's data
+                stopTableEditing();
+                int customerId = currentCustomerIds.get(modelRow);
+                New_customer dialog = new New_customer(Customer_management.this, true, customerId);
+                dialog.setLocationRelativeTo(Customer_management.this);
+                dialog.setVisible(true); // the table refreshes itself after a successful update
             }
             @Override
             public void onDelete(int modelRow) {
+                stopTableEditing();
+                int customerId = currentCustomerIds.get(modelRow);
                 int confirm = JOptionPane.showConfirmDialog(Customer_management.this,
                         "Delete this customer?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
-                    javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
-                    model.removeRow(modelRow);
+                    deleteCustomer(customerId);
                 }
             }
         }));
@@ -168,7 +173,37 @@ public class Customer_management extends javax.swing.JFrame {
                 this.dispose();
             }
         }
+    // Makes sure the Edit/Delete button cell is no longer "being edited" before the table changes
+    private void stopTableEditing() {
+        if (jTable1.isEditing()) {
+            jTable1.getCellEditor().stopCellEditing();
+        }
+    }
 
+    // DELETE: removes the customer from the database (only allowed if they have no orders)
+    private void deleteCustomer(int customerId) {
+        String sql = "DELETE FROM customers WHERE customer_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, customerId);
+            pstmt.executeUpdate();
+
+            JOptionPane.showMessageDialog(this, "Customer deleted successfully.",
+                    "Deleted", JOptionPane.INFORMATION_MESSAGE);
+            searchCustomers(); // refresh the table (keeps the current search text, if any)
+
+        } catch (java.sql.SQLIntegrityConstraintViolationException fkEx) {
+            // orders.customer_id is ON DELETE RESTRICT, so MySQL blocks deleting customers with orders
+            JOptionPane.showMessageDialog(this,
+                    "This customer has past orders, so they can't be deleted.\n"
+                  + "Their order history must be kept for sales records and reports.",
+                    "Cannot Delete Customer", JOptionPane.WARNING_MESSAGE);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Failed to delete customer: " + e.getMessage(),
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
