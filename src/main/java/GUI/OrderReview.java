@@ -26,6 +26,7 @@ public class OrderReview extends javax.swing.JFrame {
     private java.math.BigDecimal computedSubtotal = java.math.BigDecimal.ZERO;
     private final int customerId;
     private java.math.BigDecimal computedLoyaltyDiscount = java.math.BigDecimal.ZERO;
+    private POS_Billing billingWindow; // the Billing screen that opened this review
     /**
      * Creates new form OrderReview
      */
@@ -42,6 +43,12 @@ public class OrderReview extends javax.swing.JFrame {
         this.cart = cart;
         this.customerId = customerId;
         populateOrderReview();
+    }
+ 
+
+    // Called by POS_Billing so the Edit Order button knows where to go back to
+    public void setBillingWindow(POS_Billing billingWindow) {
+        this.billingWindow = billingWindow;
     }
 
     /**
@@ -383,7 +390,11 @@ public class OrderReview extends javax.swing.JFrame {
     }//GEN-LAST:event_PickupBtnActionPerformed
 
     private void EditOrderBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditOrderBtnActionPerformed
-        // TODO add your handling code here:
+        this.dispose(); // close Order Review
+
+        if (billingWindow != null) {
+            billingWindow.returnToBilling(); // bring back the window that shows Billing (the Dashboard)
+        }
     }//GEN-LAST:event_EditOrderBtnActionPerformed
 
     private void DeliveryBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeliveryBtnActionPerformed
