@@ -24,6 +24,7 @@ public class POS_Billing extends javax.swing.JFrame {
     private final OrderDAO orderDAO = new OrderDAO();
     private String currentCategory = null;
     private Integer customerId;
+    private final java.util.Map<Integer, Integer> stockByProduct = new java.util.HashMap<>(); // productId -> stock available
     /**
      * Creates new form POS_Billing
      */
@@ -81,13 +82,22 @@ public class POS_Billing extends javax.swing.JFrame {
         javax.swing.JLabel priceLabel = new javax.swing.JLabel(String.format("Rs. %.2f", product.unitPrice));
         priceLabel.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
 
+        // Show how many are left, so the cashier can see it before adding
+        boolean inStock = product.quantityOnHand > 0;
+        javax.swing.JLabel stockLabel = new javax.swing.JLabel(
+                inStock ? "In stock: " + product.quantityOnHand : "Out of stock");
+        stockLabel.setForeground(inStock ? java.awt.Color.GRAY : new java.awt.Color(180, 40, 40));
+        stockLabel.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
+
         javax.swing.JButton addBtn = new javax.swing.JButton("Add To Order");
         addBtn.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
+        addBtn.setEnabled(inStock); // can't add a product with no stock
         addBtn.addActionListener(evt -> addProductToCart(product));
 
         card.add(javax.swing.Box.createVerticalStrut(10));
         card.add(nameLabel);
         card.add(priceLabel);
+        card.add(stockLabel);
         card.add(addBtn);
         card.add(javax.swing.Box.createVerticalStrut(10));
 
@@ -95,21 +105,29 @@ public class POS_Billing extends javax.swing.JFrame {
     }
 
     private void addProductToCart(OrderDAO.ProductRow product) {
-        for (OrderDAO.CartItem existing : cart) {
-                    if (java.util.Objects.equals(existing.productId, product.productId)) {
-                        existing.quantity++;
-                        refreshCartPanel();
-                        return;
-                    }
-                }
+        stockByProduct.put(product.productId, product.quantityOnHand); // remember how many are in stock
 
-                OrderDAO.CartItem item = new OrderDAO.CartItem();
-                item.productId = product.productId;
-                item.productName = product.productName;
-                item.unitPrice = product.unitPrice;
-                item.quantity = 1;
-                cart.add(item);
-                refreshCartPanel();
+        // Already in the order? Add 1, using the same stock check as the + button
+        for (OrderDAO.CartItem existing : cart) {
+            if (existing.productId == product.productId) {
+                changeQuantity(existing, 1);
+                return;
+            }
+        }
+
+        if (product.quantityOnHand <= 0) {
+            JOptionPane.showMessageDialog(this, product.productName + " is out of stock.",
+                    "Out of Stock", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        OrderDAO.CartItem item = new OrderDAO.CartItem();
+        item.productId = product.productId;
+        item.productName = product.productName;
+        item.unitPrice = product.unitPrice;
+        item.quantity = 1;
+        cart.add(item);
+        refreshCartPanel();
     }
     
     // Rebuild the "Current Order" list and the Subtotal / Discount / Total labels
@@ -182,13 +200,25 @@ public class POS_Billing extends javax.swing.JFrame {
     }
 
     // + adds 1, - removes 1. If quantity reaches 0, the item is removed from the order.
+    // + adds 1, - removes 1. + is blocked when it would go over the stock.
+    // If quantity reaches 0, the item is removed from the order.
     private void changeQuantity(OrderDAO.CartItem item, int change) {
+        if (change > 0) {
+            Integer inStock = stockByProduct.get(item.productId);
+            if (inStock != null && item.quantity + change > inStock) {
+                JOptionPane.showMessageDialog(this,
+                        "Only " + inStock + " of \"" + item.productName + "\" in stock.",
+                        "Not Enough Stock", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        }
+
         item.quantity += change;
         if (item.quantity <= 0) {
             cart.remove(item);
         }
         refreshCartPanel();
-    }    
+    }  
     
     // Called by Order Review's "Edit Order" button.
     // The Dashboard shows Billing inside its own window, so we bring forward

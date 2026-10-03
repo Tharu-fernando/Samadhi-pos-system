@@ -13,6 +13,7 @@ public class Add_Product extends javax.swing.JDialog {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Add_Product.class.getName());
     private java.util.Map<String, Integer> categoryMap = new java.util.HashMap<>();
     private java.util.Map<String, Integer> supplierMap = new java.util.HashMap<>();
+    private Integer editingProductId = null; 
     /**
      * Creates new form NewJDialog
      */
@@ -59,6 +60,126 @@ public class Add_Product extends javax.swing.JDialog {
             logger.log(java.util.logging.Level.SEVERE, "Failed to load suppliers", e);
         }
     }
+    
+    // Opens the dialog in EDIT mode, filled in with an existing product's details
+    public Add_Product(java.awt.Frame parent, boolean modal, int productId) {
+        this(parent, modal); // builds the form and loads categories + suppliers
+        this.editingProductId = productId;
+        jLabel6.setText("Stock on Hand");
+        btnSave.setText("Update Product");
+        loadProductForEdit();
+    }
+
+    // READ one product: fills the form with its current details
+    private void loadProductForEdit() {
+        String sql = "SELECT p.product_name, p.sku, p.unit_price, p.supplier_id, "
+                   + "c.category_name, s.supplier_name, i.quantity_on_hand, i.reorder_level "
+                   + "FROM products p "
+                   + "JOIN product_categories c ON p.category_id = c.category_id "
+                   + "JOIN inventory i ON p.product_id = i.product_id "
+                   + "LEFT JOIN suppliers s ON p.supplier_id = s.supplier_id "
+                   + "WHERE p.product_id = ?";
+
+        try (java.sql.Connection conn = CODE.DBConnection.getConnection();
+             java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, editingProductId);
+
+            try (java.sql.ResultSet rs = pstmt.executeQuery()) {
+                if (!rs.next()) {
+                    javax.swing.JOptionPane.showMessageDialog(this, "This product could not be found.",
+                            "Not Found", javax.swing.JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                lblProduct.setText(rs.getString("product_name"));
+                lblSKU.setText(rs.getString("sku"));
+                lblPrice.setText(rs.getBigDecimal("unit_price").toPlainString());
+                lblStock.setText(String.valueOf(rs.getInt("quantity_on_hand")));
+                lblReorder.setText(String.valueOf(rs.getInt("reorder_level")));
+                cmbCategory.setSelectedItem(rs.getString("category_name"));
+
+                String supplierName = rs.getString("supplier_name");
+                if (supplierName == null) {
+                    cmbSupplier.setSelectedItem("None");
+                } else {
+                    // An Inactive supplier isn't in the list, so add it to keep the product's link
+                    if (!supplierMap.containsKey(supplierName)) {
+                        supplierMap.put(supplierName, rs.getInt("supplier_id"));
+                        cmbSupplier.addItem(supplierName);
+                    }
+                    cmbSupplier.setSelectedItem(supplierName);
+                }
+            }
+        } catch (java.sql.SQLException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Failed to load product for edit", e);
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Failed to load product: " + e.getMessage(),
+                    "Database Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // UPDATE: saves changes to an existing product (products + inventory in one transaction)
+    private void updateProduct(String productName, String sku, double price, int stock,
+                               int reorderLevel, int categoryId, Integer supplierId) {
+        java.sql.Connection conn = null;
+        try {
+            conn = CODE.DBConnection.getConnection();
+            conn.setAutoCommit(false);
+
+            String productSql = "UPDATE products "
+                              + "SET category_id = ?, supplier_id = ?, product_name = ?, sku = ?, unit_price = ? "
+                              + "WHERE product_id = ?";
+            try (java.sql.PreparedStatement pstmt = conn.prepareStatement(productSql)) {
+                pstmt.setInt(1, categoryId);
+                if (supplierId == null) {
+                    pstmt.setNull(2, java.sql.Types.INTEGER);
+                } else {
+                    pstmt.setInt(2, supplierId);
+                }
+                pstmt.setString(3, productName);
+                pstmt.setString(4, sku);
+                pstmt.setDouble(5, price);
+                pstmt.setInt(6, editingProductId);
+                pstmt.executeUpdate();
+            }
+
+            String inventorySql = "UPDATE inventory SET quantity_on_hand = ?, reorder_level = ? "
+                                + "WHERE product_id = ?";
+            try (java.sql.PreparedStatement pstmt = conn.prepareStatement(inventorySql)) {
+                pstmt.setInt(1, stock);
+                pstmt.setInt(2, reorderLevel);
+                pstmt.setInt(3, editingProductId);
+                pstmt.executeUpdate();
+            }
+
+            conn.commit(); // both tables are saved together, or neither is
+
+            if (getParent() instanceof Inventory_and_product_management) {
+                ((Inventory_and_product_management) getParent()).loadProducts();
+            }
+
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Product updated successfully!", "Success",
+                    javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            this.dispose();
+
+        } catch (java.sql.SQLIntegrityConstraintViolationException dupEx) {
+            if (conn != null) try { conn.rollback(); } catch (java.sql.SQLException ignored) {}
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Another product already uses this SKU.", "Duplicate SKU",
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
+        } catch (java.sql.SQLException dbEx) {
+            if (conn != null) try { conn.rollback(); } catch (java.sql.SQLException ignored) {}
+            logger.log(java.util.logging.Level.SEVERE, "Error updating product", dbEx);
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Database error: " + dbEx.getMessage(), "Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
+        } finally {
+            if (conn != null) {
+                try { conn.setAutoCommit(true); conn.close(); } catch (java.sql.SQLException ignored) {}
+            }
+        }
+    }    
 
 
     /**
@@ -314,6 +435,13 @@ public class Add_Product extends javax.swing.JDialog {
         Integer supplierId = (selectedSupplier == null || selectedSupplier.equals("None"))
                 ? null
                 : supplierMap.get(selectedSupplier);
+        
+        // EDIT mode: update the existing product instead of creating a new one
+        if (editingProductId != null) {
+            updateProduct(productName, sku, price, stock, reorderLevel, categoryId, supplierId);
+            return;
+        }        
+        
 //CREATE
         // 7. Insert into products + inventory in a single transaction
         java.sql.Connection conn = null;

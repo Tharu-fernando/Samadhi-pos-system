@@ -34,11 +34,25 @@ public class PaymentDAO {
     }
 
     // CREATE - called from ConfirmBtn once it's wired up
+    // Why the last createPayment() failed (shown to the cashier on the payment screen)
+    private String lastError = null;
+
+    public String getLastError() {
+        return lastError;
+    }
+
+    // CREATE - records the payment, deducts stock and completes the order (all or nothing)
     public boolean createPayment(int orderId, String paymentMethod, BigDecimal amountPaid) {
+        lastError = null;
+
         String insertPayment = "INSERT INTO payments (order_id, payment_method, amount_paid, payment_status) "
                               + "VALUES (?, ?, ?, 'Success')";
-        String selectItems = "SELECT product_id, quantity FROM order_items WHERE order_id = ?";
-        String updateInventory = "UPDATE inventory SET quantity_on_hand = quantity_on_hand - ? WHERE product_id = ?";
+        String selectItems = "SELECT oi.product_id, oi.quantity, p.product_name "
+                           + "FROM order_items oi JOIN products p ON p.product_id = oi.product_id "
+                           + "WHERE oi.order_id = ?";
+        // Only deducts when there is enough stock, so stock can never go below zero
+        String updateInventory = "UPDATE inventory SET quantity_on_hand = quantity_on_hand - ? "
+                               + "WHERE product_id = ? AND quantity_on_hand >= ?";
         String updateOrderStatus = "UPDATE orders SET order_status = 'Completed' WHERE order_id = ?";
 
         Connection conn = null;
@@ -61,11 +75,19 @@ public class PaymentDAO {
                     while (rs.next()) {
                         int productId = rs.getInt("product_id");
                         int quantity = rs.getInt("quantity");
+                        String productName = rs.getString("product_name");
 
                         try (PreparedStatement updatePs = conn.prepareStatement(updateInventory)) {
                             updatePs.setInt(1, quantity);
                             updatePs.setInt(2, productId);
-                            updatePs.executeUpdate();
+                            updatePs.setInt(3, quantity);
+                            int updated = updatePs.executeUpdate();
+
+                            if (updated == 0) {
+                                // Not enough stock: stop here, and the catch block below undoes everything
+                                throw new SQLException("Not enough stock for \"" + productName
+                                        + "\" (trying to sell " + quantity + ").");
+                            }
                         }
                     }
                 }
@@ -84,6 +106,7 @@ public class PaymentDAO {
             if (conn != null) {
                 try { conn.rollback(); } catch (SQLException ignored) {}
             }
+            lastError = e.getMessage();
             logger.log(java.util.logging.Level.SEVERE, "Error creating payment for order " + orderId, e);
             return false;
         } finally {
