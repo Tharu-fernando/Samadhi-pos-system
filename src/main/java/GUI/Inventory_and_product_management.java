@@ -192,7 +192,7 @@ public class Inventory_and_product_management extends javax.swing.JFrame {
                 .addContainerGap(30, Short.MAX_VALUE))
         );
 
-        btnRestock.setBackground(new java.awt.Color(11, 107, 109));
+        btnRestock.setBackground(new java.awt.Color(255, 153, 102));
         btnRestock.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnRestock.setForeground(new java.awt.Color(255, 255, 255));
         btnRestock.setText("Restock");
