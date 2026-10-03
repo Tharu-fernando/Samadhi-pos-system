@@ -409,8 +409,11 @@ public class PayementScreen extends javax.swing.JFrame {
 
         boolean success = paymentDAO.createPayment(orderId, paymentMethod, amountPaid);
         if (!success) {
-            JOptionPane.showMessageDialog(this, "Failed to save the payment. Please try again.",
-                    "Database Error", JOptionPane.ERROR_MESSAGE);
+            String reason = paymentDAO.getLastError();
+            JOptionPane.showMessageDialog(this,
+                    "The payment was NOT saved and no stock was changed.\n"
+                  + (reason != null ? reason : "Please try again."),
+                    "Payment Failed", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
