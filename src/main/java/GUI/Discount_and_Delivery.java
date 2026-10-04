@@ -5,10 +5,14 @@
 package GUI;
 
 import CODE.DBConnection;
+import CODE.ProductActionEditor;
+import CODE.ProductActionRenderer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 /**
@@ -23,6 +27,7 @@ public class Discount_and_Delivery extends javax.swing.JFrame {
      * Creates new form Discount_and_Loyalty
      */
     private int orderId;
+    private final List<Integer> tierIds = new ArrayList<>();  // tier_id of each table row
 
     public Discount_and_Delivery() {
         this(0); // fallback for NetBeans Design view / no-arg testing — not for real use
@@ -32,23 +37,32 @@ public class Discount_and_Delivery extends javax.swing.JFrame {
         initComponents();
         this.orderId = orderId;
         Delivery_Details_Plane_text.setText("Delivery Details - ORD - " + orderId);
+        setupTierTable();        
         loadLoyaltyTiers();
     }
     
     public void loadLoyaltyTiers() {
-        String sql = "SELECT tier_name, min_points, max_points, discount_percentage FROM loyalty_tiers";
+        if (jTable1.isEditing()) {
+            jTable1.getCellEditor().cancelCellEditing();
+        }
+
+        String sql = "SELECT tier_id, tier_name, min_points, max_points, discount_percentage "
+                   + "FROM loyalty_tiers ORDER BY min_points";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
             model.setRowCount(0);
+            tierIds.clear();
 
             while (rs.next()) {
                 int min = rs.getInt("min_points");
                 Object maxObj = rs.getObject("max_points");
                 Integer max = (maxObj == null) ? null : rs.getInt("max_points");
                 String range = (max == null) ? min + "+" : min + " - " + max + " pts";
+
+                tierIds.add(rs.getInt("tier_id"));
                 model.addRow(new Object[]{
                     rs.getString("tier_name"),
                     range,
@@ -61,6 +75,75 @@ public class Discount_and_Delivery extends javax.swing.JFrame {
                 "Database Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
+
+    // Puts the edit / Del buttons into the "Edit / Delete" column
+    private void setupTierTable() {
+        jTable1.setModel(new DefaultTableModel(
+                new Object[][]{},
+                new String[]{"TIER", "POINT RANGE", "DISCOUNT", "Edit / Delete"}) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 3;   // only the button column can be clicked
+            }
+        });
+
+        jTable1.setRowHeight(32);
+        jTable1.getColumnModel().getColumn(3).setPreferredWidth(140);
+        jTable1.getColumnModel().getColumn(3).setCellRenderer(new ProductActionRenderer());
+        jTable1.getColumnModel().getColumn(3).setCellEditor(
+            new ProductActionEditor(new ProductActionEditor.ProductActions() {
+                @Override
+                public void onEdit(int modelRow) {
+                    editTier(modelRow);
+                }
+
+                @Override
+                public void onDelete(int modelRow) {
+                    deleteTier(modelRow);
+                }
+            }));
+    }
+
+    // UPDATE - opens the New Tier Rule window in edit mode
+    private void editTier(int modelRow) {
+        if (modelRow < 0 || modelRow >= tierIds.size()) {
+            return;
+        }
+        int tierId = tierIds.get(modelRow);
+
+        New_tier_rule form = new New_tier_rule(this, tierId);
+        form.setLocationRelativeTo(this);
+        form.setVisible(true);
+    }
+
+    // DELETE
+    private void deleteTier(int modelRow) {
+        if (modelRow < 0 || modelRow >= tierIds.size()) {
+            return;
+        }
+        int tierId = tierIds.get(modelRow);
+        String tierName = String.valueOf(jTable1.getModel().getValueAt(modelRow, 0));
+
+        int choice = JOptionPane.showConfirmDialog(this,
+            "Delete the \"" + tierName + "\" tier rule?",
+            "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (choice != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        String sql = "DELETE FROM loyalty_tiers WHERE tier_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, tierId);
+            ps.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Tier rule deleted.");
+            loadLoyaltyTiers();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Failed to delete tier: " + e.getMessage(),
+                "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }    
     
     private void saveDeliveryAddress(int orderId, String address) {
         String sql = "INSERT INTO deliveries (order_id, delivery_address, delivery_status) "
