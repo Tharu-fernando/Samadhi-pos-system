@@ -7,6 +7,7 @@ package GUI;
 import CODE.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 /**
@@ -21,14 +22,54 @@ public class New_tier_rule extends javax.swing.JFrame {
      * Creates new form New_tier_rule
      */
     private final Discount_and_Delivery parentFrame;
+    private final Integer tierId;   // null = new tier, a number = editing that tier
 
     public New_tier_rule() {
         this(null);
     }
 
+    // CREATE mode ("+ New Tier Rule" button)
     public New_tier_rule(Discount_and_Delivery parentFrame) {
+        this(parentFrame, null);
+    }
+
+    // UPDATE mode ("edit" button)
+    public New_tier_rule(Discount_and_Delivery parentFrame, Integer tierId) {
         initComponents();
         this.parentFrame = parentFrame;
+        this.tierId = tierId;
+
+        if (tierId != null) {
+            New_Tier_Rule_Plane_text.setText("Edit Tier Rule");
+            Save_RuleBtn.setText("Update Rule");
+            loadTier(tierId);
+        }
+    }
+
+    // Fills the text boxes with the tier's current values
+    private void loadTier(int id) {
+        String sql = "SELECT tier_name, min_points, max_points, discount_percentage "
+                   + "FROM loyalty_tiers WHERE tier_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Tier_Name_Input.setText(rs.getString("tier_name"));
+                    Min_Points_Input.setText(String.valueOf(rs.getInt("min_points")));
+                    Object maxObj = rs.getObject("max_points");
+                    Max_Points_Input.setText(maxObj == null ? "" : String.valueOf(rs.getInt("max_points")));
+                    Discount_Presentaage_Input.setText(
+                        rs.getBigDecimal("discount_percentage").stripTrailingZeros().toPlainString());
+                } else {
+                    showError("This tier no longer exists.");
+                    Save_RuleBtn.setEnabled(false);
+                }
+            }
+        } catch (SQLException e) {
+            showError("Database error: " + e.getMessage());
+            Save_RuleBtn.setEnabled(false);
+        }
     }
 
     /**
@@ -237,9 +278,17 @@ public class New_tier_rule extends javax.swing.JFrame {
         return;
     }
 
-    // 6. All valid — insert into DB
-        if (insertTierRule(tierName, minPoints, maxPoints, discount)) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Tier rule saved successfully!");
+    // 6. All valid - INSERT (new tier) or UPDATE (edit tier)
+        boolean ok;
+        if (tierId == null) {
+            ok = insertTierRule(tierName, minPoints, maxPoints, discount);
+        } else {
+            ok = updateTierRule(tierId, tierName, minPoints, maxPoints, discount);
+        }
+
+        if (ok) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                tierId == null ? "Tier rule saved successfully!" : "Tier rule updated successfully!");
             if (parentFrame != null) {
                 parentFrame.loadLoyaltyTiers();
             }
@@ -267,6 +316,30 @@ public class New_tier_rule extends javax.swing.JFrame {
             return false;
         }
     }
+    
+
+    // UPDATE
+    private boolean updateTierRule(int id, String tierName, int minPoints, int maxPoints, float discount) {
+        String sql = "UPDATE loyalty_tiers "
+                   + "SET tier_name = ?, min_points = ?, max_points = ?, discount_percentage = ? "
+                   + "WHERE tier_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, tierName);
+            ps.setInt(2, minPoints);
+            ps.setInt(3, maxPoints);
+            ps.setFloat(4, discount);
+            ps.setInt(5, id);
+            ps.executeUpdate();
+            return true;
+        } catch (SQLIntegrityConstraintViolationException e) {
+            showError("A tier named \"" + tierName + "\" already exists.");
+            return false;
+        } catch (SQLException e) {
+            showError("Database error: " + e.getMessage());
+            return false;
+        }
+    }    
 
     private void clearForm() {
         Tier_Name_Input.setText("");
