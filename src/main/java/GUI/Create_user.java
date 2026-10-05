@@ -18,14 +18,79 @@ import java.sql.SQLException;
 public class Create_user extends javax.swing.JFrame {
     
     private String selectedRole = null;
+    private ManageStaff parentList = null;   // staff list to refresh after saving (null = opened from login)
+    private Integer editUserId = null;       // null = create new account, a number = editing that account
+    private String currentStatus = "Active";    
     /**
      * Creates new form Create_user
      */
     public Create_user() {
+        this(null, null);   // opened from the login screen
+    }
+
+    // CREATE mode - "+ Create Account" on Manage Staff
+    public Create_user(ManageStaff parentList) {
+        this(parentList, null);
+    }
+
+    // EDIT mode - "edit" button on Manage Staff
+    public Create_user(ManageStaff parentList, Integer editUserId) {
         initComponents();
-        btnCashier.addActionListener(evt -> selectedRole = "Cashier");
-        btnAdmin.addActionListener(evt -> selectedRole = "Admin");
+        this.parentList = parentList;
+        this.editUserId = editUserId;
+
+        btnCashier.addActionListener(evt -> { selectedRole = "Cashier"; showSelectedRole(); });
+        btnAdmin.addActionListener(evt -> { selectedRole = "Admin"; showSelectedRole(); });
         btnback.addActionListener(evt -> backToSignIn());
+
+        if (parentList != null) {
+            btnback.setText("<-- Back to staff list");
+        }
+
+        if (editUserId != null) {
+            jLabel2.setText("Edit Staff Account");
+            jLabel5.setText("New Password");
+            btnCreateAcc.setText("Update Account");
+            txtpassword.setToolTipText("Leave empty to keep the current password");
+            txtconfirm.setToolTipText("Leave empty to keep the current password");
+            loadUser(editUserId);
+        }
+    }
+
+    // Fills the form with the staff member's current details (edit mode)
+    private void loadUser(int userId) {
+        String sql = "SELECT full_name, username, role, status FROM users WHERE user_id = ?";
+        try (Connection conn = CODE.DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (java.sql.ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    lblfullname.setText(rs.getString("full_name"));
+                    txtusername.setText(rs.getString("username"));
+                    selectedRole = rs.getString("role");
+                    currentStatus = rs.getString("status");
+                    showSelectedRole();
+                } else {
+                    JOptionPane.showMessageDialog(this, "This staff account no longer exists.",
+                        "Not Found", JOptionPane.WARNING_MESSAGE);
+                    btnCreateAcc.setEnabled(false);
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Database error: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
+            btnCreateAcc.setEnabled(false);
+        }
+    }
+
+    // Colours the chosen role button so you can see which role is selected
+    private void showSelectedRole() {
+        boolean cashier = "Cashier".equals(selectedRole);
+        boolean admin = "Admin".equals(selectedRole);
+        btnCashier.setBackground(cashier ? new java.awt.Color(11, 107, 109) : null);
+        btnCashier.setForeground(cashier ? java.awt.Color.WHITE : java.awt.Color.BLACK);
+        btnAdmin.setBackground(admin ? new java.awt.Color(11, 107, 109) : null);
+        btnAdmin.setForeground(admin ? java.awt.Color.WHITE : java.awt.Color.BLACK);
     }
 
     /**
@@ -241,28 +306,33 @@ public class Create_user extends javax.swing.JFrame {
             return;
         }
 
-        if (password.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                "Password cannot be empty.", "Validation Error",
-                JOptionPane.WARNING_MESSAGE);
-            txtpassword.requestFocus();
-            return;
-        }
+        // Edit mode: the password is optional. Leave both boxes empty to keep the old one.
+        boolean changePassword = (editUserId == null) || !password.isEmpty() || !confirm.isEmpty();
 
-        if (password.length() < 6) {
-            JOptionPane.showMessageDialog(this,
-                "Password must be at least 6 characters.", "Validation Error",
-                JOptionPane.WARNING_MESSAGE);
-            txtpassword.requestFocus();
-            return;
-        }
+        if (changePassword) {
+            if (password.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                    "Password cannot be empty.", "Validation Error",
+                    JOptionPane.WARNING_MESSAGE);
+                txtpassword.requestFocus();
+                return;
+            }
 
-        if (!password.equals(confirm)) {
-            JOptionPane.showMessageDialog(this,
-                "Passwords do not match.", "Validation Error",
-                JOptionPane.WARNING_MESSAGE);
-            txtconfirm.requestFocus();
-            return;
+            if (password.length() < 6) {
+                JOptionPane.showMessageDialog(this,
+                    "Password must be at least 6 characters.", "Validation Error",
+                    JOptionPane.WARNING_MESSAGE);
+                txtpassword.requestFocus();
+                return;
+            }
+
+            if (!password.equals(confirm)) {
+                JOptionPane.showMessageDialog(this,
+                    "Passwords do not match.", "Validation Error",
+                    JOptionPane.WARNING_MESSAGE);
+                txtconfirm.requestFocus();
+                return;
+            }
         }
 
         if (selectedRole == null) {
@@ -273,22 +343,51 @@ public class Create_user extends javax.swing.JFrame {
         }
         
         
-        String hashedPassword = PasswordUtil.hash(passwordChars);
-//CREATE
-        String sql = "INSERT INTO users (username, password_hash, full_name, role, created_by) "
-                   + "VALUES (?, ?, ?, ?, ?)";
+        String hashedPassword = changePassword ? PasswordUtil.hash(passwordChars) : null;
 
-        try (Connection conn = CODE.DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        // Edit mode: if the account is Inactive, ask whether to switch it back on
+        String newStatus = currentStatus;
+        if (editUserId != null && "Inactive".equals(currentStatus)) {
+            int answer = JOptionPane.showConfirmDialog(this,
+                "This account is Inactive, so this person can't sign in.\nMake it Active again?",
+                "Account Status", JOptionPane.YES_NO_OPTION);
+            if (answer == JOptionPane.YES_OPTION) {
+                newStatus = "Active";
+            }
+        }
 
-            pstmt.setString(1, username);
-            pstmt.setString(2, hashedPassword);
-            pstmt.setString(3, fullName);
-            pstmt.setString(4, selectedRole);
-            pstmt.setInt(5, Session.getCurrentUserId());
-
-            pstmt.executeUpdate();
-
+        try (Connection conn = CODE.DBConnection.getConnection()) {
+            if (editUserId == null) {
+                // CREATE
+                String sql = "INSERT INTO users (username, password_hash, full_name, role, created_by) "
+                           + "VALUES (?, ?, ?, ?, ?)";
+                try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                    pstmt.setString(1, username);
+                    pstmt.setString(2, hashedPassword);
+                    pstmt.setString(3, fullName);
+                    pstmt.setString(4, selectedRole);
+                    pstmt.setInt(5, Session.getCurrentUserId());
+                    pstmt.executeUpdate();
+                }
+            } else {
+                // UPDATE (the password only changes if a new one was typed)
+                String sql = changePassword
+                    ? "UPDATE users SET full_name = ?, username = ?, role = ?, status = ?, password_hash = ? WHERE user_id = ?"
+                    : "UPDATE users SET full_name = ?, username = ?, role = ?, status = ? WHERE user_id = ?";
+                try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                    pstmt.setString(1, fullName);
+                    pstmt.setString(2, username);
+                    pstmt.setString(3, selectedRole);
+                    pstmt.setString(4, newStatus);
+                    if (changePassword) {
+                        pstmt.setString(5, hashedPassword);
+                        pstmt.setInt(6, editUserId);
+                    } else {
+                        pstmt.setInt(5, editUserId);
+                    }
+                    pstmt.executeUpdate();
+                }
+            }
         } catch (SQLIntegrityConstraintViolationException e) {
             JOptionPane.showMessageDialog(this,
                 "That username is already taken.", "Duplicate Username",
@@ -302,18 +401,23 @@ public class Create_user extends javax.swing.JFrame {
         }
 
         JOptionPane.showMessageDialog(this,
-            "Staff account created successfully:\n"
+            (editUserId == null ? "Staff account created successfully:\n" : "Staff account updated successfully:\n")
             + "Name: " + fullName + "\n"
             + "Username: " + username + "\n"
             + "Role: " + selectedRole,
-            "Account Created", JOptionPane.INFORMATION_MESSAGE);
+            editUserId == null ? "Account Created" : "Account Updated", JOptionPane.INFORMATION_MESSAGE);
 
         java.util.Arrays.fill(passwordChars, '0');
         java.util.Arrays.fill(confirmChars, '0');
+        if (parentList != null) {
+            parentList.loadUsers();   // refresh the Manage Staff table
+        }
         this.dispose();
     }//GEN-LAST:event_btnCreateAccActionPerformed
     private void backToSignIn() {
-        new Logging().setVisible(true);
+        if (parentList == null) {
+            new Logging().setVisible(true);   // opened from the login screen
+        }
         this.dispose();
     }
     /**
