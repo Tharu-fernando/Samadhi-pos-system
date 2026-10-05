@@ -7,6 +7,10 @@ package GUI;
 import CODE.ReceiptDAO;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import CODE.DBConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 /**
  *
  * @author User
@@ -75,7 +79,107 @@ public class ReceiptInvoicePrintout extends javax.swing.JFrame {
         for (Object[] row : items) {
             model.addRow(row);
         }
+        showRefundStatus();     
     }
+    
+
+    // If this sale was already refunded, show it and turn off the Refund button
+    private void showRefundStatus() {
+        String sql = "SELECT payment_status FROM payments WHERE order_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            try (java.sql.ResultSet rs = ps.executeQuery()) {
+                if (rs.next() && "Refunded".equals(rs.getString("payment_status"))) {
+                    PaidinfullLabel.setText("REFUNDED");
+                    RefundBtn.setEnabled(false);
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(java.util.logging.Level.WARNING, "Could not check refund status for order " + orderId, e);
+        }
+    }    
+
+    // UPDATE - refunds this sale. In one transaction:
+    // payment -> Refunded, order -> Cancelled, stock is put back, loyalty points are taken back.
+    // Either all 4 changes are saved, or none of them are.
+    private void refundSale() {
+        if (orderId == -1) {
+            return;
+        }
+
+        int choice = JOptionPane.showConfirmDialog(this,
+                "Refund order #ORD-" + orderId + "?\nThe stock will be put back and the order will be cancelled.",
+                "Refund Sale", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (choice != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        Connection conn = null;
+        try {
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false);
+
+            // 1. Payment -> Refunded (only if it is still Success)
+            int rows;
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE payments SET payment_status = 'Refunded' "
+                  + "WHERE order_id = ? AND payment_status = 'Success'")) {
+                ps.setInt(1, orderId);
+                rows = ps.executeUpdate();
+            }
+            if (rows == 0) {
+                conn.rollback();
+                JOptionPane.showMessageDialog(this, "This sale has already been refunded.",
+                        "Refund Sale", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // 2. Order -> Refunded
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE orders SET order_status = 'Refunded' WHERE order_id = ?")) {
+                ps.setInt(1, orderId);
+                ps.executeUpdate();
+            }
+
+            // 3. Put the sold items back into stock
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE inventory i "
+                  + "JOIN order_items oi ON oi.product_id = i.product_id "
+                  + "SET i.quantity_on_hand = i.quantity_on_hand + oi.quantity "
+                  + "WHERE oi.order_id = ?")) {
+                ps.setInt(1, orderId);
+                ps.executeUpdate();
+            }
+
+            // 4. Take back the loyalty points (1 point per Rs. 100), never below 0
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE customers c "
+                  + "JOIN orders o ON o.customer_id = c.customer_id "
+                  + "SET c.loyalty_points = GREATEST(c.loyalty_points - FLOOR(o.total_amount / 100), 0) "
+                  + "WHERE o.order_id = ?")) {
+                ps.setInt(1, orderId);
+                ps.executeUpdate();
+            }
+
+            conn.commit();
+
+            PaidinfullLabel.setText("REFUNDED");
+            RefundBtn.setEnabled(false);
+            JOptionPane.showMessageDialog(this, "Sale refunded. The stock has been put back.",
+                    "Refund Sale", JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (SQLException e) {
+            if (conn != null) try { conn.rollback(); } catch (SQLException ignored) {}
+            logger.log(java.util.logging.Level.SEVERE, "Failed to refund order " + orderId, e);
+            JOptionPane.showMessageDialog(this, "Refund failed. Nothing was changed.\n" + e.getMessage(),
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            if (conn != null) {
+                try { conn.setAutoCommit(true); conn.close(); } catch (SQLException ignored) {}
+            }
+        }
+    }    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -98,6 +202,7 @@ public class ReceiptInvoicePrintout extends javax.swing.JFrame {
         ShowBalance = new javax.swing.JLabel();
         PaidinfullLabel = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        RefundBtn = new javax.swing.JButton();
         jPanel6 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         ReceiptLabel = new javax.swing.JLabel();
@@ -170,6 +275,9 @@ public class ReceiptInvoicePrintout extends javax.swing.JFrame {
         jButton1.setText("Print receipt");
         jButton1.addActionListener(this::jButton1ActionPerformed);
 
+        RefundBtn.setText("Refund Sale");
+        RefundBtn.addActionListener(this::RefundBtnActionPerformed);
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -181,8 +289,11 @@ public class ReceiptInvoicePrintout extends javax.swing.JFrame {
                     .addComponent(ShowBalance)
                     .addComponent(ISSUEDlabel)
                     .addComponent(DateAndTime, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(234, Short.MAX_VALUE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(RefundBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(130, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -196,7 +307,9 @@ public class ReceiptInvoicePrintout extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(ShowBalance)
                 .addGap(18, 18, 18)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(RefundBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE))
                 .addContainerGap(77, Short.MAX_VALUE))
         );
 
@@ -431,6 +544,10 @@ public class ReceiptInvoicePrintout extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void RefundBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefundBtnActionPerformed
+        refundSale();
+    }//GEN-LAST:event_RefundBtnActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -470,6 +587,7 @@ public class ReceiptInvoicePrintout extends javax.swing.JFrame {
     private javax.swing.JLabel ReceiptInvoiceLabel;
     private javax.swing.JLabel ReceiptLabel;
     private javax.swing.JLabel ReciptId;
+    private javax.swing.JButton RefundBtn;
     private javax.swing.JLabel SaleCompleteLabel;
     private javax.swing.JLabel ShowBalance;
     private javax.swing.JLabel Subtotal;

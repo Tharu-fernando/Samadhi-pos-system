@@ -31,6 +31,9 @@ public class PayementScreen extends javax.swing.JFrame {
 
     public PayementScreen() {
         initComponents();
+        AddProduct.setText("Cancel Order");                          // this button now cancels the unpaid order
+        AddProduct.setBackground(new java.awt.Color(220, 38, 38));    // red, like the Del buttons
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE); // X closes only this window        
         restrictToDigits(AmountTenderedText);//AmountTenderedText
 
         // Recalculate change every time the amount tendered changes
@@ -101,7 +104,7 @@ public class PayementScreen extends javax.swing.JFrame {
         AddProduct.setBackground(new java.awt.Color(11, 107, 109));
         AddProduct.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         AddProduct.setForeground(new java.awt.Color(255, 255, 255));
-        AddProduct.setText("Add Product");
+        AddProduct.setText("Cancel Order");
         AddProduct.addActionListener(this::AddProductActionPerformed);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -300,9 +303,50 @@ public class PayementScreen extends javax.swing.JFrame {
     }
     
     private void AddProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddProductActionPerformed
-        // TODO add your handling code here:
+        cancelOrder();
     }//GEN-LAST:event_AddProductActionPerformed
 
+    
+    // DELETE - cancels this unpaid order and removes it from the database.
+    // Its order items, discount and delivery rows are removed too (ON DELETE CASCADE).
+    private void cancelOrder() {
+        if (orderId == -1) {
+            dispose();
+            return;
+        }
+
+        int choice = JOptionPane.showConfirmDialog(this,
+                "Cancel order #ORD-" + orderId + "?\nThe order and its items will be deleted.",
+                "Cancel Order", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (choice != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        // Only deletes the order if it has NOT been paid yet
+        String sql = "DELETE FROM orders WHERE order_id = ? "
+                   + "AND NOT EXISTS (SELECT 1 FROM payments WHERE payments.order_id = ?)";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            ps.setInt(2, orderId);
+            int rows = ps.executeUpdate();
+
+            if (rows == 0) {
+                JOptionPane.showMessageDialog(this,
+                        "This order is already paid, so it can't be deleted.\nUse Refund Sale on the receipt instead.",
+                        "Cannot Cancel", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            JOptionPane.showMessageDialog(this, "Order #ORD-" + orderId + " was cancelled.");
+            dispose();
+        } catch (SQLException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Failed to cancel order " + orderId, e);
+            JOptionPane.showMessageDialog(this, "Failed to cancel the order: " + e.getMessage(),
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     
     private void AmountTenderedTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AmountTenderedTextActionPerformed
         try {
