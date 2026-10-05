@@ -185,9 +185,13 @@
                               <Component id="ShowBalance" min="-2" max="-2" attributes="0"/>
                               <Component id="ISSUEDlabel" min="-2" max="-2" attributes="0"/>
                               <Component id="DateAndTime" min="-2" pref="93" max="-2" attributes="0"/>
-                              <Component id="jButton1" alignment="0" min="-2" pref="173" max="-2" attributes="0"/>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="jButton1" min="-2" pref="173" max="-2" attributes="0"/>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Component id="RefundBtn" min="-2" pref="165" max="-2" attributes="0"/>
+                              </Group>
                           </Group>
-                          <EmptySpace pref="234" max="32767" attributes="0"/>
+                          <EmptySpace pref="130" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -203,7 +207,10 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="ShowBalance" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="jButton1" min="-2" pref="41" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="RefundBtn" max="32767" attributes="0"/>
+                              <Component id="jButton1" pref="41" max="32767" attributes="0"/>
+                          </Group>
                           <EmptySpace pref="77" max="32767" attributes="0"/>
                       </Group>
                   </Group>
@@ -248,6 +255,14 @@
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JButton" name="RefundBtn">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Refund Sale"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="RefundBtnActionPerformed"/>
                   </Events>
                 </Component>
               </SubComponents>

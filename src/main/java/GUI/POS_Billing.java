@@ -231,6 +231,74 @@ public class POS_Billing extends javax.swing.JFrame {
         }
         jPanel1.revalidate();
         jPanel1.repaint();
+    } 
+    
+
+    // Shows previous paid orders. Pick one to open its receipt (Refund Sale is on the receipt).
+    private void showPastOrders() {
+        javax.swing.table.DefaultTableModel model = new javax.swing.table.DefaultTableModel(
+                new Object[]{"Order No", "Date", "Customer", "Total (Rs.)", "Payment"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;   // read-only list
+            }
+        };
+
+        // Only orders that were paid (they have a receipt). Newest first.
+        String sql = "SELECT o.order_id, o.order_date, "
+                   + "COALESCE(c.full_name, c.phone_number) AS customer, "
+                   + "o.total_amount, p.payment_status "
+                   + "FROM orders o "
+                   + "JOIN payments p ON p.order_id = o.order_id "
+                   + "JOIN customers c ON c.customer_id = o.customer_id "
+                   + "ORDER BY o.order_id DESC "
+                   + "LIMIT 200";
+
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd MMM yyyy, hh:mm a");
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getInt("order_id"),
+                    sdf.format(rs.getTimestamp("order_date")),
+                    rs.getString("customer"),
+                    String.format("%,.2f", rs.getBigDecimal("total_amount")),
+                    rs.getString("payment_status")      // Success or Refunded
+                });
+            }
+        } catch (SQLException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Failed to load past orders", e);
+            JOptionPane.showMessageDialog(this, "Failed to load past orders: " + e.getMessage(),
+                    "Database Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (model.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "There are no paid orders yet.");
+            return;
+        }
+
+        javax.swing.JTable table = new javax.swing.JTable(model);
+        table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        table.setRowHeight(26);
+        table.setRowSelectionInterval(0, 0);   // newest order is selected first
+        javax.swing.JScrollPane scroll = new javax.swing.JScrollPane(table);
+        scroll.setPreferredSize(new java.awt.Dimension(700, 350));
+
+        int choice = JOptionPane.showConfirmDialog(this, scroll,
+                "Past Orders - select one and click OK to open its receipt",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (choice != JOptionPane.OK_OPTION || table.getSelectedRow() == -1) {
+            return;
+        }
+
+        int orderId = (Integer) model.getValueAt(table.getSelectedRow(), 0);
+        ReceiptInvoicePrintout receipt = new ReceiptInvoicePrintout(orderId);
+        receipt.setLocationRelativeTo(this);
+        receipt.setVisible(true);
     }    
     /**
      * This method is called from within the constructor to initialize the form.
@@ -245,6 +313,7 @@ public class POS_Billing extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
+        PastOrdersBtn = new javax.swing.JButton();
         Searchbar = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
@@ -286,6 +355,10 @@ public class POS_Billing extends javax.swing.JFrame {
         jButton2.setText("Get Selling Report");
         jButton2.addActionListener(this::jButton2ActionPerformed);
 
+        PastOrdersBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        PastOrdersBtn.setText("Past Orders");
+        PastOrdersBtn.addActionListener(this::PastOrdersBtnActionPerformed);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -294,6 +367,8 @@ public class POS_Billing extends javax.swing.JFrame {
                 .addGap(19, 19, 19)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 328, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(PastOrdersBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(39, 39, 39)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(21, 21, 21))
         );
@@ -303,11 +378,13 @@ public class POS_Billing extends javax.swing.JFrame {
                 .addGap(15, 15, 15)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addGap(0, 18, Short.MAX_VALUE)))
+                        .addGap(0, 20, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(PastOrdersBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE))))
                 .addContainerGap())
         );
 
@@ -581,7 +658,7 @@ public class POS_Billing extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 11, Short.MAX_VALUE))
+                .addGap(0, 9, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -706,6 +783,10 @@ public class POS_Billing extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton10ActionPerformed
 
+    private void PastOrdersBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PastOrdersBtnActionPerformed
+        showPastOrders();
+    }//GEN-LAST:event_PastOrdersBtnActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -734,6 +815,7 @@ public class POS_Billing extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton CheckoutBtn;
     private javax.swing.JLabel DiscountPrice;
+    private javax.swing.JButton PastOrdersBtn;
     private javax.swing.JTextField Searchbar;
     private javax.swing.JScrollPane SelectedItemPanel;
     private javax.swing.JLabel SumOfPrice;
