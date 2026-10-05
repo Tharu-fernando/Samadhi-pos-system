@@ -21,20 +21,34 @@ public class addEditSupplierForm extends javax.swing.JFrame {
     /**
      * Creates new form addEditSupplierForm
      */
-    private Supplierlist parentList;   // add as a field near the top
+    private Supplierlist parentList;
+    private Integer supplierId;   // null = add new supplier, a number = editing that supplier
 
     public addEditSupplierForm() {
         this(null);
     }
 
+    // ADD mode ("+Add Supplier" button)
     public addEditSupplierForm(Supplierlist parent) {
+        this(parent, null);
+    }
+
+    // EDIT mode ("edit" button in the table)
+    public addEditSupplierForm(Supplierlist parent, Integer supplierId) {
         this.parentList = parent;
+        this.supplierId = supplierId;
         initComponents();
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         jButton1.addActionListener(evt -> dispose());
         jButton2.addActionListener(evt -> dispose());
         jButton3.addActionListener(evt -> saveSupplier());
         loadSupplierCount();
+
+        if (supplierId != null) {
+            jLabel4.setText("Edit supplier");
+            jButton3.setText("Update");
+            loadSupplier(supplierId);
+        }
     }
     
     private void loadSupplierCount() {
@@ -49,6 +63,34 @@ public class addEditSupplierForm extends javax.swing.JFrame {
             logger.log(java.util.logging.Level.SEVERE, "Error loading supplier count", ex);
         }
     }
+
+
+    // Fills the text boxes with the supplier's current details
+    private void loadSupplier(int id) {
+        String sql = "SELECT supplier_name, contact_person, phone_number, address "
+                   + "FROM suppliers WHERE supplier_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    jTextField1.setText(rs.getString("supplier_name"));
+                    jTextField2.setText(rs.getString("contact_person"));
+                    jTextField3.setText(rs.getString("phone_number"));
+                    jTextField4.setText(rs.getString("address"));
+                } else {
+                    JOptionPane.showMessageDialog(this, "This supplier no longer exists.",
+                        "Not Found", JOptionPane.WARNING_MESSAGE);
+                    jButton3.setEnabled(false);
+                }
+            }
+        } catch (SQLException ex) {
+            logger.log(java.util.logging.Level.SEVERE, "Error loading supplier", ex);
+            JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
+            jButton3.setEnabled(false);
+        }
+    }    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -342,9 +384,15 @@ public class addEditSupplierForm extends javax.swing.JFrame {
             jTextField4.requestFocus();
             return;
         }
-//CREATE
-        String sql = "INSERT INTO suppliers (supplier_name, contact_person, phone_number, address, status) "
-                   + "VALUES (?, ?, ?, ?, 'Active')";
+        // CREATE (new supplier) or UPDATE (editing a supplier)
+        String sql;
+        if (supplierId == null) {
+            sql = "INSERT INTO suppliers (supplier_name, contact_person, phone_number, address, status) "
+                + "VALUES (?, ?, ?, ?, 'Active')";
+        } else {
+            sql = "UPDATE suppliers SET supplier_name = ?, contact_person = ?, phone_number = ?, address = ? "
+                + "WHERE supplier_id = ?";
+        }
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -353,16 +401,21 @@ public class addEditSupplierForm extends javax.swing.JFrame {
             stmt.setString(2, contactPerson);
             stmt.setString(3, phone);
             stmt.setString(4, address);
+            if (supplierId != null) {
+                stmt.setInt(5, supplierId);
+            }
 
             stmt.executeUpdate();
 
-        JOptionPane.showMessageDialog(this, "Supplier saved successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                supplierId == null ? "Supplier saved successfully." : "Supplier updated successfully.",
+                "Success", JOptionPane.INFORMATION_MESSAGE);
 
-        if (parentList != null) {
-            parentList.loadSuppliers();   // ← refresh the list behind it
-        }
+            if (parentList != null) {
+                parentList.loadSuppliers();   // refresh the list behind it
+            }
 
-        dispose();
+            dispose();
 
         } catch (SQLException ex) {
             logger.log(java.util.logging.Level.SEVERE, "Error while saving supplier", ex);

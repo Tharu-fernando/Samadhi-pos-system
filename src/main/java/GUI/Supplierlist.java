@@ -25,6 +25,7 @@ public class Supplierlist extends javax.swing.JFrame {
      */
     public Supplierlist() {
         initComponents();
+        setupActionColumn();
         loadSuppliers();
 
         // Set up the row sorter for filtering
@@ -58,24 +59,37 @@ public class Supplierlist extends javax.swing.JFrame {
     }
 //READ
     public void loadSuppliers() {
+        if (jTable1.isEditing()) {
+            jTable1.getCellEditor().cancelCellEditing();
+        }
+
         javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
+        supplierIds.clear();
 
-        String sql = "SELECT supplier_name, contact_person, phone_number, status FROM suppliers";
+        // Joins each supplier to its products and puts all the product names in one cell
+        String sql = "SELECT s.supplier_id, s.supplier_name, s.contact_person, s.phone_number, s.status, "
+                   + "GROUP_CONCAT(p.product_name ORDER BY p.product_name SEPARATOR ', ') AS items "
+                   + "FROM suppliers s "
+                   + "LEFT JOIN products p ON p.supplier_id = s.supplier_id AND p.status = 'Active' "
+                   + "GROUP BY s.supplier_id, s.supplier_name, s.contact_person, s.phone_number, s.status "
+                   + "ORDER BY s.supplier_id";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
+                String items = rs.getString("items");   // null when the supplier has no products
+
+                supplierIds.add(rs.getInt("supplier_id"));
                 model.addRow(new Object[]{
                     rs.getString("supplier_name"),
                     rs.getString("contact_person"),
                     rs.getString("phone_number"),
-                    "-",                          // Item Supplied — no direct column; placeholder for now
-                    0,                            // Supplies Count — needs a join/count query later
+                    (items == null) ? "-" : items,      // Item Supplied
                     rs.getString("status"),
-                    ""                            // Action column
+                    ""                                  // Action column
                 });
             }
         } catch (SQLException e) {
@@ -119,6 +133,76 @@ public class Supplierlist extends javax.swing.JFrame {
         RowFilter<Object, Object> filter = RowFilter.regexFilter("(?i)" + java.util.regex.Pattern.quote(text), 0, 1, 3);
         sorter.setRowFilter(filter);
     }
+    
+
+    private void setupActionColumn() {
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+                new Object[][]{},
+                new String[]{"Supplier Name", "Contact Person", "Phone", "Item Supplied", "Status", "Action"}) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 5;   // only the Action column can be clicked
+            }
+        });
+
+        jTable1.setRowHeight(32);
+        jTable1.getColumnModel().getColumn(3).setPreferredWidth(250);   // more room for item names
+        jTable1.getColumnModel().getColumn(5).setPreferredWidth(140);
+        jTable1.getColumnModel().getColumn(5).setCellRenderer(new CODE.ProductActionRenderer());
+        jTable1.getColumnModel().getColumn(5).setCellEditor(
+            new CODE.ProductActionEditor(new CODE.ProductActionEditor.ProductActions() {
+                @Override
+                public void onEdit(int modelRow) {
+                    editSupplier(modelRow);
+                }
+
+                @Override
+                public void onDelete(int modelRow) {
+                    deleteSupplier(modelRow);
+                }
+            }));
+    }
+
+    // UPDATE - opens the supplier form in edit mode
+    private void editSupplier(int modelRow) {
+        if (modelRow < 0 || modelRow >= supplierIds.size()) {
+            return;
+        }
+        int supplierId = supplierIds.get(modelRow);
+
+        addEditSupplierForm form = new addEditSupplierForm(this, supplierId);
+        form.setLocationRelativeTo(this);
+        form.setVisible(true);
+    }
+
+    // DELETE
+    private void deleteSupplier(int modelRow) {
+        if (modelRow < 0 || modelRow >= supplierIds.size()) {
+            return;
+        }
+        int supplierId = supplierIds.get(modelRow);
+        String name = String.valueOf(jTable1.getModel().getValueAt(modelRow, 0));
+
+        int choice = JOptionPane.showConfirmDialog(this,
+            "Delete supplier \"" + name + "\"?\nTheir products will stay, but with no supplier.",
+            "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (choice != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        String sql = "DELETE FROM suppliers WHERE supplier_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, supplierId);
+            pstmt.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Supplier deleted.");
+            loadSuppliers();
+        } catch (SQLException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Failed to delete supplier", e);
+            JOptionPane.showMessageDialog(this, "Failed to delete supplier: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -395,4 +479,5 @@ public class Supplierlist extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
     private javax.swing.table.TableRowSorter<javax.swing.table.DefaultTableModel> sorter;
+    private final java.util.List<Integer> supplierIds = new java.util.ArrayList<>();    
 }
