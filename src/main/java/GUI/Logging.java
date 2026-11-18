@@ -184,6 +184,11 @@ public class Logging extends javax.swing.JFrame {
         btnSignin.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         btnSignin.setForeground(new java.awt.Color(255, 255, 255));
         btnSignin.setText("Sign In");
+        btnSignin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSigninActionPerformed(evt);
+            }
+        });
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel5.setText("Role Base Access : Cashier / Admin");
@@ -307,6 +312,10 @@ public class Logging extends javax.swing.JFrame {
     private void lblPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lblPasswordActionPerformed
         handleSignIn();
     }//GEN-LAST:event_lblPasswordActionPerformed
+
+    private void btnSigninActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSigninActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnSigninActionPerformed
 
      private void openCreateAccount() {
         new Create_user().setVisible(true);

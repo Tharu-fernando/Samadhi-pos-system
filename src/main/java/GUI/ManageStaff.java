@@ -287,6 +287,7 @@ public class ManageStaff extends javax.swing.JFrame {
         CreateAccountBtn.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         CreateAccountBtn.setForeground(new java.awt.Color(255, 255, 255));
         CreateAccountBtn.setText("+ Create Account");
+        CreateAccountBtn.addActionListener(this::CreateAccountBtnActionPerformed);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -380,6 +381,10 @@ public class ManageStaff extends javax.swing.JFrame {
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         filterUsers();
     }//GEN-LAST:event_btnSearchActionPerformed
+
+    private void CreateAccountBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CreateAccountBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_CreateAccountBtnActionPerformed
 
     /**
      * @param args the command line arguments
