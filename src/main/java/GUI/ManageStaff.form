@@ -129,6 +129,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="+ Create Account"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="CreateAccountBtnActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

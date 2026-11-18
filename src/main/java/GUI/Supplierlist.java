@@ -57,7 +57,7 @@ public class Supplierlist extends javax.swing.JFrame {
             public void changedUpdate(javax.swing.event.DocumentEvent e) { filterTable(); }
         });
     }
-//READ
+//READ supplier information from database 
     public void loadSuppliers() {
         if (jTable1.isEditing()) {
             jTable1.getCellEditor().cancelCellEditing();
@@ -195,7 +195,7 @@ public class Supplierlist extends javax.swing.JFrame {
         }
     }  
     
-    // INLINE UPDATE: saves the cell that was just edited
+    // INLINE UPDATE: saves the cell that was just edited (double click)
     private boolean saveSupplierEdit(int modelRow, int column, Object newValue) {
         int supplierId = supplierIds.get(modelRow);
         String value = (newValue == null) ? "" : newValue.toString().trim();
